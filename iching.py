@@ -1,4 +1,5 @@
 import random
+import readline  # 添加readline支持
 from typing import List, Dict, Tuple
 from hexagram_data import (HEXAGRAMS_DATA, TRIGRAM_ATTRIBUTES, 
                          HEXAGRAM_NAMES, HEXAGRAM_PINYIN)
@@ -186,39 +187,52 @@ def print_available_hexagrams():
 if __name__ == "__main__":
     iching = IChing()
     
+    # 配置readline
+    readline.parse_and_bind('set editing-mode emacs')  # 使用emacs键绑定
+    readline.parse_and_bind('set horizontal-scroll-mode on')
+    readline.parse_and_bind('set mark-directories on')
+    readline.parse_and_bind('set mark-symlinked-directories on')
+    
     # 显示所有可用的卦象
     print_available_hexagrams()
     
-    question = input("请输入你想问的问题：")
-    result = iching.interpret_hexagram(question)
-    
-    print("\n周易卦象解析")
-    print_divider()
-    print(f"问题：{result['question']}")
-    print_divider()
-    print(f"本卦：{result['hexagram_name']}")
-    print(f"卦辞：{result['description']}")
-    print(f"卦义：{result['meaning']}")
-    print_divider()
-    print("上卦：")
-    print(f"  本卦：{result['upper_trigram']['name']}")
-    print(f"  性质：{result['upper_trigram'].get('nature', '未知')}")
-    print(f"  特性：{result['upper_trigram'].get('character', '未知')}")
-    print(f"  五行：{result['upper_trigram'].get('element', '未知')}")
-    print("\n下卦：")
-    print(f"  本卦：{result['lower_trigram']['name']}")
-    print(f"  性质：{result['lower_trigram'].get('nature', '未知')}")
-    print(f"  特性：{result['lower_trigram'].get('character', '未知')}")
-    print(f"  五行：{result['lower_trigram'].get('element', '未知')}")
-    print_divider()
-    print("爻位：")
-    # 从上往下打印爻位
-    for line in sorted(result['lines'], key=lambda x: x['position'], reverse=True):
-        print(f"{line['symbol']}  第{line['position']}爻: {line['type']}")
-    
-    if result['has_changes']:
+    try:
+        question = input("请输入你想问的问题：").strip()
+        if not question:
+            print("\n问题不能为空，请重新运行程序。")
+            exit(1)
+        result = iching.interpret_hexagram(question)
+        
+        print("\n周易卦象解析")
         print_divider()
-        print("变卦：")
-        print(f"卦名：{result['changed_hexagram']['name']}")
-        print(f"卦辞：{result['changed_hexagram']['description']}")
-        print(f"卦义：{result['changed_hexagram']['meaning']}") 
+        print(f"问题：{result['question']}")
+        print_divider()
+        print(f"本卦：{result['hexagram_name']}")
+        print(f"卦辞：{result['description']}")
+        print(f"卦义：{result['meaning']}")
+        print_divider()
+        print("上卦：")
+        print(f"  本卦：{result['upper_trigram']['name']}")
+        print(f"  性质：{result['upper_trigram'].get('nature', '未知')}")
+        print(f"  特性：{result['upper_trigram'].get('character', '未知')}")
+        print(f"  五行：{result['upper_trigram'].get('element', '未知')}")
+        print("\n下卦：")
+        print(f"  本卦：{result['lower_trigram']['name']}")
+        print(f"  性质：{result['lower_trigram'].get('nature', '未知')}")
+        print(f"  特性：{result['lower_trigram'].get('character', '未知')}")
+        print(f"  五行：{result['lower_trigram'].get('element', '未知')}")
+        print_divider()
+        print("爻位：")
+        # 从上往下打印爻位
+        for line in sorted(result['lines'], key=lambda x: x['position'], reverse=True):
+            print(f"{line['symbol']}  第{line['position']}爻: {line['type']}")
+        
+        if result['has_changes']:
+            print_divider()
+            print("变卦：")
+            print(f"卦名：{result['changed_hexagram']['name']}")
+            print(f"卦辞：{result['changed_hexagram']['description']}")
+            print(f"卦义：{result['changed_hexagram']['meaning']}")
+    except Exception as e:
+        print(f"\n发生错误：{e}")
+        exit(1) 
