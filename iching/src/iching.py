@@ -1,8 +1,15 @@
+import os
+import sys
 import random
 import readline  # 添加readline支持
 from typing import List, Dict, Tuple
 from hexagram_data import (HEXAGRAMS_DATA, TRIGRAM_ATTRIBUTES, 
-                         HEXAGRAM_NAMES, HEXAGRAM_PINYIN,HEXAGRAM_MAPS)
+                         HEXAGRAM_NAMES, HEXAGRAM_PINYIN, HEXAGRAM_MAPS)
+
+# Add the current directory to Python path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.append(current_dir)
 
 class IChing:
     # 八卦基本属性
@@ -81,35 +88,28 @@ class IChing:
                 self.TRIGRAMS.get(lower, "未知"))
 
     def get_hexagram_name(self, binary_values: List[int]) -> str:
-        """
-        根据二进制值获取卦名
-        
-        Args:
-            binary_values: 六爻的二进制值列表
-            
-        Returns:
-            str: 返回格式为 "卦名 (拼音)" 的字符串，如果找不到对应的卦象则返回 "未知卦"
-        """
-        # 检查输入值的有效性
+        """根据六爻的二进制值获取卦名"""
         if not binary_values or len(binary_values) != 6:
             return "未知卦"
-            
-        # 将二进制值转换为字符串
-        binary_str = ''.join(map(str, binary_values))
         
-        # 获取上下卦组合
-        trigram_pair = self.trigram_pairs.get(binary_str)
-        if not trigram_pair:
+        # 获取上下卦的二进制值
+        upper_trigram = tuple(binary_values[:3])
+        lower_trigram = tuple(binary_values[3:])
+        
+        # 获取上下卦的名称
+        upper_name = self.TRIGRAMS.get(upper_trigram)
+        lower_name = self.TRIGRAMS.get(lower_trigram)
+        
+        if not upper_name or not lower_name:
             return "未知卦"
-            
-        # 从HEXAGRAM_MAPS中获取标准卦名
-        hexagram_name = HEXAGRAM_MAPS.get(trigram_pair)
-        if not hexagram_name:
-            return "未知卦"
-            
-        # 获取拼音
-        pinyin = HEXAGRAM_PINYIN.get(hexagram_name, "")
-        return f"{hexagram_name} ({pinyin})" if pinyin else hexagram_name
+        
+        # 组合上下卦名称
+        trigram_key = f"{upper_name}{lower_name}"
+        
+        # 从HEXAGRAM_MAPS中获取卦名
+        hexagram_name = HEXAGRAM_MAPS.get(trigram_key)
+        
+        return hexagram_name if hexagram_name else "未知卦"
   
     def get_changed_hexagram(self, hexagram: List[int]) -> List[int]:
         """
@@ -202,21 +202,19 @@ class IChing:
         
         return result
 
+    def print_available_hexagrams(self):
+        """打印可用的六十四卦"""
+        print("\n可用的六十四卦：")
+        print_divider()
+        for i, (key, name) in enumerate(HEXAGRAM_MAPS.items(), 1):
+            pinyin = HEXAGRAM_PINYIN.get(name, "")
+            print(f"{i:2d}. {key}->{name} ({pinyin})", end="\t")
+            if i % 4 == 0:
+                print()
+        print("\n")
+
 def print_divider():
     print("=" * 50)
-
-def print_available_hexagrams():
-    """
-    打印所有可用的卦象名称及其拼音
-    """
-    print("\n可用的六十四卦：")
-    print_divider()
-    for i, name in enumerate(HEXAGRAM_NAMES, 1):
-        pinyin = HEXAGRAM_PINYIN.get(name, "")
-        print(f"{i:2d}. {name} ({pinyin})", end="\t")
-        if i % 4 == 0:
-            print()  # 换行
-    print("\n")
 
 if __name__ == "__main__":
     iching = IChing()
@@ -228,7 +226,7 @@ if __name__ == "__main__":
     readline.parse_and_bind('set mark-symlinked-directories on')
     
     # 显示所有可用的卦象
-    print_available_hexagrams()
+    iching.print_available_hexagrams()
     
     try:
         question = input("请输入你想问的问题：").strip()
