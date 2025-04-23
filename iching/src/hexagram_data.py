@@ -2630,6 +2630,190 @@ HEXAGRAMS_DATA = {
                 "change_meaning": "行为要有节制，过度则有损。"
             }
         }
+    },
+    # 第三十六卦
+    "地火": {
+        "name": "明夷",
+        "upper_trigram": "地",
+        "lower_trigram": "火",
+        "description": "利艰贞",
+        "meaning": "光明受损，处于困境。坚守正道，终见光明。",
+        "yao_texts": {
+            "1": {
+                "symbol": "初九",
+                "description": "明夷于飞，垂其翼。君子于行，三日不食，有攸往，主人有言",
+                "meaning": "明亮受损而飞翔，垂下翅膀。君子在行进中，三天不吃饭，有所前往，主人有话说。",
+                "change_meaning": "处境艰难，暂时隐忍，保持警惕，等待时机。"
+            },
+            "2": {
+                "symbol": "六二",
+                "description": "明夷，夷于左股，用拯马壮，吉",
+                "meaning": "光明受损，伤在左腿。用强壮的马来救助，吉祥。",
+                "change_meaning": "虽受挫折，但得贵人相助，终有转机。"
+            },
+            "3": {
+                "symbol": "九三",
+                "description": "明夷于南狩，得其大首，不可疾贞",
+                "meaning": "光明受损于南方狩猎，获得大的收获，不可急于求正。",
+                "change_meaning": "行动谨慎，不可操之过急，静待时机。"
+            },
+            "4": {
+                "symbol": "六四",
+                "description": "入于左腹，获明夷之心，出于门庭",
+                "meaning": "进入左腹部，得到明夷之心，从门庭中出来。",
+                "change_meaning": "深入了解困境，找到问题核心，寻求出路。"
+            },
+            "5": {
+                "symbol": "六五",
+                "description": "箕子之明夷，利贞",
+                "meaning": "像箕子那样的明哲保身，守正道有利。",
+                "change_meaning": "效法贤者，明哲保身，坚守正道。"
+            },
+            "6": {
+                "symbol": "上六",
+                "description": "不明晦，初登于天，后入于地",
+                "meaning": "不明而晦暗，开始上升到天，后来又入于地。",
+                "change_meaning": "形势反复，起落无常，需谨慎应对。"
+            }
+        }
+    },
+    # 第三十七卦
+    "离坤": {
+        "name": "家人",
+        "upper_trigram": "离",
+        "lower_trigram": "坤",
+        "description": "利女贞",
+        "meaning": "家庭和睦，内外和顺。持家有道，事业兴旺。",
+        "yao_texts": {
+            "1": {
+                "symbol": "初九",
+                "description": "闲有家，悔亡",
+                "meaning": "治家有规，悔恨消除。",
+                "change_meaning": "家庭和谐，规矩有序，消除隐患。"
+            },
+            "2": {
+                "symbol": "六二",
+                "description": "无攸遂，在中馈，贞吉",
+                "meaning": "无所追求，安心持家，守正道吉祥。",
+                "change_meaning": "安分守己，尽心持家，终得吉祥。"
+            },
+            "3": {
+                "symbol": "九三",
+                "description": "家人嗃嗃，悔厉吉；妇子嘻嘻，终吝",
+                "meaning": "家人严厉，有悔有险但吉祥；妇人和孩子嬉笑，最终会有困难。",
+                "change_meaning": "治家严明，终得吉祥；轻慢无度，必有后患。"
+            },
+            "4": {
+                "symbol": "六四",
+                "description": "富家，大吉",
+                "meaning": "家道富裕，大吉大利。",
+                "change_meaning": "家业兴旺，前途光明。"
+            },
+            "5": {
+                "symbol": "九五",
+                "description": "王假有家，勿恤，吉",
+                "meaning": "君王治理家国，不用忧虑，吉祥。",
+                "change_meaning": "以德治家，以仁治国，终得吉祥。"
+            },
+            "6": {
+                "symbol": "上九",
+                "description": "有孚威如，终吉",
+                "meaning": "心怀诚信，威严自显，最终吉祥。",
+                "change_meaning": "诚信为本，威严自显，家道昌盛。"
+            }
+        }
+    },
+    # 第三十八卦
+    "离兑": {
+        "name": "睽",
+        "upper_trigram": "离",
+        "lower_trigram": "兑",
+        "description": "小事吉",
+        "meaning": "乖离背驰，彼此对立。小事可为，大事难成。",
+        "yao_texts": {
+            "1": {
+                "symbol": "初九",
+                "description": "悔亡，丧马勿逐，自复；见恶人，无咎",
+                "meaning": "悔恨消除，失马不要追赶，它会自己回来；见到恶人，无灾祸。",
+                "change_meaning": "失而复得，无需强求；遇险避祸，保持清醒。"
+            },
+            "2": {
+                "symbol": "九二",
+                "description": "遇主于巷，无咎",
+                "meaning": "在小巷中遇到主人，无灾祸。",
+                "change_meaning": "贵人相助，化险为夷。"
+            },
+            "3": {
+                "symbol": "六三",
+                "description": "见舆曳，其牛掣，其人天且劓，无初有终",
+                "meaning": "看见大车被拉着，牛被勒住，驾车的人额头受伤鼻子破裂，开始时没有好结果但最终会好。",
+                "change_meaning": "处境艰难，历经磨难，终见光明。"
+            },
+            "4": {
+                "symbol": "九四",
+                "description": "睽孤，遇元夫，交孚，厉无咎",
+                "meaning": "孤独乖离，遇到贵人，彼此信任，虽有危险但无灾祸。",
+                "change_meaning": "孤立无援，得遇贵人，互信互助，化险为夷。"
+            },
+            "5": {
+                "symbol": "六五",
+                "description": "悔亡，厥宗噬肤，往何咎",
+                "meaning": "悔恨消除，族人团结如一，前进有何灾祸。",
+                "change_meaning": "团结一心，同舟共济，无往不利。"
+            },
+            "6": {
+                "symbol": "上九",
+                "description": "睽孤，见豕负涂，载鬼一车，先张之弧，后说之弧，匪寇婚媾，往遇雨则吉",
+                "meaning": "孤独乖离，见到猪背着泥，车上载着鬼，先拉弓后放弓，不是盗寇而是来求婚，前去遇雨则吉祥。",
+                "change_meaning": "形势诡异，虚惊一场，柳暗花明，终得吉祥。"
+            }
+        }
+    },
+    # 第三十九卦
+    "坎艮": {
+        "name": "蹇",
+        "upper_trigram": "坎",
+        "lower_trigram": "艮",
+        "description": "利西南，不利东北；利见大人，贞吉",
+        "meaning": "行动受阻，进退维谷。审时度势，静待时机。",
+        "yao_texts": {
+            "1": {
+                "symbol": "初六",
+                "description": "往蹇，来誉",
+                "meaning": "前进有困难，返回受称赞。",
+                "change_meaning": "知难而退，反受称赞。"
+            },
+            "2": {
+                "symbol": "六二",
+                "description": "王臣蹇蹇，匪躬之故",
+                "meaning": "王的臣子步履艰难，不是为了自己。",
+                "change_meaning": "为公忘私，虽难无咎。"
+            },
+            "3": {
+                "symbol": "九三",
+                "description": "往蹇来反",
+                "meaning": "前进遇到困难就返回。",
+                "change_meaning": "审时度势，知难而退。"
+            },
+            "4": {
+                "symbol": "六四",
+                "description": "往蹇来连",
+                "meaning": "前进困难，返回则得到援助。",
+                "change_meaning": "退而得助，化险为夷。"
+            },
+            "5": {
+                "symbol": "九五",
+                "description": "大蹇朋来",
+                "meaning": "处于重大困难，朋友前来帮助。",
+                "change_meaning": "困境之中，得到援助。"
+            },
+            "6": {
+                "symbol": "上六",
+                "description": "往蹇来硕，吉；利见大人",
+                "meaning": "前进困难，返回收获丰厚，吉祥；有利于见大人。",
+                "change_meaning": "知难而退，终得其福。"
+            }
+        }
     }
 }
 
