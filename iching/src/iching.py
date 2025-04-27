@@ -156,49 +156,62 @@ class IChing:
         upper_attributes = TRIGRAM_ATTRIBUTES.get(upper, {})
         lower_attributes = TRIGRAM_ATTRIBUTES.get(lower, {})
         
-        # 生成爻位信息，包含变爻标记和传统符号
-        lines = []
+        # 生成爻位信息
+        yao_texts = {}
         for i, v in enumerate(hexagram):
             yao_type, yao_symbol = self.YAO_TYPES[v]
             position = 6 - i  # 从下往上数
-            yao_text = hexagram_info.get("yao_texts", {}).get(str(position), {
-                "symbol": f"第{position}爻",
-                "description": "无爻辞",
-                "meaning": "无解释",
-                "change_meaning": "无变爻解释"
-            })
             
-            line_info = {
-                "position": position,
+            # 从卦象数据中获取爻位信息
+            yao_info = hexagram_info.get("yao_texts", {}).get(str(position), {})
+            if not yao_info:  # 如果没有找到对应的爻位信息，使用默认值
+                yao_info = {
+                    "symbol": f"第{position}爻",
+                    "description": "无爻辞",
+                    "meaning": "无解释"
+                }
+            
+            # 构建爻位信息
+            yao_data = {
                 "type": yao_type,
-                "symbol": yao_symbol,
-                "is_changing": self.is_changing_line(v),
-                "yao_text": yao_text
+                "symbol": yao_info.get("symbol", f"第{position}爻"),
+                "description": yao_info.get("description", "无爻辞"),
+                "meaning": yao_info.get("meaning", "无解释")
             }
-            lines.append(line_info)
+            
+            # 如果是变爻，添加变爻信息
+            if self.is_changing_line(v):
+                yao_data["change_meaning"] = yao_info.get("change_meaning", "无变爻解释")
+            
+            yao_texts[str(position)] = yao_data
         
         result = {
             "question": question,
-            "hexagram": hexagram,
+            "name": hexagram_name,
+            "description": hexagram_info.get("description", "无描述"),
+            "meaning": hexagram_info.get("meaning", "无解释"),
             "upper_trigram": {
                 "name": upper,
-                **upper_attributes
+                "nature": upper_attributes.get("nature", "无"),
+                "characteristic": upper_attributes.get("characteristic", "无"),
+                "element": upper_attributes.get("element", "无")
             },
             "lower_trigram": {
                 "name": lower,
-                **lower_attributes
+                "nature": lower_attributes.get("nature", "无"),
+                "characteristic": lower_attributes.get("characteristic", "无"),
+                "element": lower_attributes.get("element", "无")
             },
-            "hexagram_name": hexagram_name,
-            "description": hexagram_info.get("description", "暂无卦辞"),
-            "meaning": hexagram_info.get("meaning", "暂无卦义"),
-            "lines": lines,
-            "has_changes": any(self.is_changing_line(v) for v in hexagram),
-            "changed_hexagram": {
-                "name": changed_hexagram_name,
-                "description": changed_hexagram_info.get("description", "暂无卦辞"),
-                "meaning": changed_hexagram_info.get("meaning", "暂无卦义")
-            } if any(self.is_changing_line(v) for v in hexagram) else None
+            "yao_texts": yao_texts
         }
+        
+        # 如果有变爻，添加变卦信息
+        if any(self.is_changing_line(v) for v in hexagram):
+            result["changed_hexagram"] = {
+                "name": changed_hexagram_name,
+                "description": changed_hexagram_info.get("description", "无描述"),
+                "meaning": changed_hexagram_info.get("meaning", "无解释")
+            }
         
         return result
 
@@ -239,39 +252,38 @@ if __name__ == "__main__":
         print_divider()
         print(f"问题：{result['question']}")
         print_divider()
-        print(f"本卦：{result['hexagram_name']}")
-        print(f"卦辞：{result.get('description', '暂无卦辞')}")
-        print(f"卦义：{result.get('meaning', '暂无卦义')}")
+        print(f"本卦：{result['name']}")
+        print(f"卦辞：{result['description']}")
+        print(f"卦义：{result['meaning']}")
         print_divider()
         print("上卦：")
         print(f"  本卦：{result['upper_trigram']['name']}")
-        print(f"  性质：{result['upper_trigram'].get('nature', '未知')}")
-        print(f"  特性：{result['upper_trigram'].get('character', '未知')}")
-        print(f"  五行：{result['upper_trigram'].get('element', '未知')}")
+        print(f"  性质：{result['upper_trigram']['nature']}")
+        print(f"  特性：{result['upper_trigram']['characteristic']}")
+        print(f"  五行：{result['upper_trigram']['element']}")
         print("\n下卦：")
         print(f"  本卦：{result['lower_trigram']['name']}")
-        print(f"  性质：{result['lower_trigram'].get('nature', '未知')}")
-        print(f"  特性：{result['lower_trigram'].get('character', '未知')}")
-        print(f"  五行：{result['lower_trigram'].get('element', '未知')}")
+        print(f"  性质：{result['lower_trigram']['nature']}")
+        print(f"  特性：{result['lower_trigram']['characteristic']}")
+        print(f"  五行：{result['lower_trigram']['element']}")
         print_divider()
         print("爻位：")
         # 从上往下打印爻位
-        for line in sorted(result['lines'], key=lambda x: x['position'], reverse=True):
-            print(f"{line.get('symbol', '未知')}  第{line.get('position', '?')}爻: {line.get('type', '未知')}")
-            yao_text = line.get('yao_text', {})
-            print(f"  {yao_text.get('symbol', '未知')}: {yao_text.get('description', '暂无爻辞')}")
-            print(f"  含义: {yao_text.get('meaning', '暂无含义')}")
-            if line.get('is_changing', False):
-                print(f"  变爻: {yao_text.get('change_meaning', '暂无变爻含义')}")
+        for position, yao_info in sorted(result['yao_texts'].items(), key=lambda x: int(x[0]), reverse=True):
+            print(f"{yao_info['symbol']}  第{position}爻: {yao_info['type']}")
+            print(f"  {yao_info['symbol']}: {yao_info['description']}")
+            print(f"  含义: {yao_info['meaning']}")
+            if yao_info.get('change_meaning', '无变爻解释') != '无变爻解释':
+                print(f"  变爻: {yao_info['change_meaning']}")
             print()
         
-        if result.get('has_changes', False):
+        if result.get('changed_hexagram', None):
             print_divider()
             print("变卦：")
-            changed_hexagram = result.get('changed_hexagram', {})
-            print(f"卦名：{changed_hexagram.get('name', '未知')}")
-            print(f"卦辞：{changed_hexagram.get('description', '暂无卦辞')}")
-            print(f"卦义：{changed_hexagram.get('meaning', '暂无卦义')}")
+            changed_hexagram_info = result['changed_hexagram']
+            print(f"卦名：{changed_hexagram_info['name']}")
+            print(f"卦辞：{changed_hexagram_info['description']}")
+            print(f"卦义：{changed_hexagram_info['meaning']}")
     except Exception as e:
         print(f"\n发生错误：{e}")
         exit(1) 

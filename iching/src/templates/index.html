@@ -52,7 +52,25 @@
 
         <!-- 结果显示区域 -->
         <div id="result" class="result-section max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6">
-            <h2 class="text-2xl font-semibold mb-4">卦象解析结果</h2>
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-semibold">卦象解析结果</h2>
+                <div class="flex space-x-4">
+                    <button id="aiInterpretBtn" 
+                        class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        AI解卦
+                    </button>
+                    <button id="downloadBtn" 
+                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        下载解析结果
+                    </button>
+                </div>
+            </div>
             
             <!-- 问题 -->
             <div class="mb-6">
@@ -107,21 +125,160 @@
                     <p><span class="font-medium">卦义：</span><span id="changedHexagramMeaning"></span></p>
                 </div>
             </div>
+
+            <!-- AI解读结果 -->
+            <div id="aiInterpretation" class="mb-6 hidden">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">AI解读</h3>
+                <div class="space-y-4">
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-medium text-purple-900 mb-2">整体形势</h4>
+                        <p id="aiSituation" class="text-gray-700"></p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-medium text-purple-900 mb-2">具体建议</h4>
+                        <p id="aiAdvice" class="text-gray-700"></p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-medium text-purple-900 mb-2">注意事项</h4>
+                        <p id="aiWarnings" class="text-gray-700"></p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-medium text-purple-900 mb-2">发展方向</h4>
+                        <p id="aiDirection" class="text-gray-700"></p>
+                    </div>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <h4 class="font-medium text-purple-900 mb-2">行动建议</h4>
+                        <p id="aiAction" class="text-gray-700"></p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- 日志显示区域 -->
+    <div class="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4" style="max-height: 200px; overflow-y: auto;">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg font-medium">系统日志</h3>
+            <button id="clearLogBtn" class="text-sm bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">
+                清除日志
+            </button>
+        </div>
+        <pre id="logArea" class="text-sm font-mono whitespace-pre-wrap"></pre>
+    </div>
+
     <script>
+        let currentResult = null;  // 存储当前的解析结果
+        
+        // 日志功能
+        function log(message, type = 'info') {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'text-red-400' : 
+                             type === 'warning' ? 'text-yellow-400' : 
+                             'text-green-400';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = colorClass;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logArea.appendChild(logEntry);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        // 清除日志
+        document.getElementById('clearLogBtn').addEventListener('click', () => {
+            document.getElementById('logArea').innerHTML = '';
+            log('日志已清除');
+        });
+
+        function displayResult(result) {
+            document.querySelector('.result-section').style.display = 'block';
+            
+            // 显示问题
+            document.getElementById('questionResult').textContent = result.question || '无';
+            log(`显示问题: ${result.question || '无'}`);
+            
+            // 显示本卦信息
+            document.getElementById('hexagramName').textContent = result.name || '无';
+            document.getElementById('hexagramDescription').textContent = result.description || '无';
+            document.getElementById('hexagramMeaning').textContent = result.meaning || '无';
+            log(`显示卦象: ${result.name || '无'}`);
+            
+            // 显示上下卦信息
+            const upperTrigram = result.upper_trigram || {};
+            const lowerTrigram = result.lower_trigram || {};
+            
+            document.getElementById('upperTrigramName').textContent = upperTrigram.name || '无';
+            document.getElementById('upperTrigramNature').textContent = upperTrigram.nature || '无';
+            document.getElementById('upperTrigramCharacter').textContent = upperTrigram.characteristic || '无';
+            document.getElementById('upperTrigramElement').textContent = upperTrigram.element || '无';
+            
+            document.getElementById('lowerTrigramName').textContent = lowerTrigram.name || '无';
+            document.getElementById('lowerTrigramNature').textContent = lowerTrigram.nature || '无';
+            document.getElementById('lowerTrigramCharacter').textContent = lowerTrigram.characteristic || '无';
+            document.getElementById('lowerTrigramElement').textContent = lowerTrigram.element || '无';
+            
+            // 显示所有字段
+            document.getElementById('upperTrigramNature').parentElement.style.display = '';
+            document.getElementById('upperTrigramCharacter').parentElement.style.display = '';
+            document.getElementById('upperTrigramElement').parentElement.style.display = '';
+            document.getElementById('lowerTrigramNature').parentElement.style.display = '';
+            document.getElementById('lowerTrigramCharacter').parentElement.style.display = '';
+            document.getElementById('lowerTrigramElement').parentElement.style.display = '';
+            
+            log(`上卦: ${upperTrigram.name || '无'}, 下卦: ${lowerTrigram.name || '无'}`);
+            
+            // 显示爻位信息
+            const yaoPositionsContainer = document.getElementById('yaoPositions');
+            yaoPositionsContainer.innerHTML = '';
+            
+            const yaoTexts = result.yao_texts || {};
+            Object.entries(yaoTexts)
+                .sort((a, b) => b[0] - a[0])  // 按位置降序排序
+                .forEach(([position, yao]) => {
+                    const yaoDiv = document.createElement('div');
+                    yaoDiv.className = 'bg-gray-50 rounded-lg p-4';
+                    yaoDiv.innerHTML = `
+                        <h4 class="font-medium text-gray-900">第${position}爻（${yao.type || '无'}）</h4>
+                        <div class="mt-2 space-y-1">
+                            <p><span class="font-medium">符号：</span>${yao.symbol || '无'}</p>
+                            <p><span class="font-medium">描述：</span>${yao.description || '无'}</p>
+                            <p><span class="font-medium">含义：</span>${yao.meaning || '无'}</p>
+                            ${yao.change_meaning ? `<p><span class="font-medium">变爻：</span>${yao.change_meaning}</p>` : ''}
+                        </div>
+                    `;
+                    yaoPositionsContainer.appendChild(yaoDiv);
+                    log(`显示第${position}爻信息`);
+                });
+            
+            // 显示变卦信息
+            const changedHexagram = document.getElementById('changedHexagram');
+            if (result.changed_hexagram) {
+                changedHexagram.style.display = 'block';
+                document.getElementById('changedHexagramName').textContent = result.changed_hexagram.name || '无';
+                document.getElementById('changedHexagramDescription').textContent = result.changed_hexagram.description || '无';
+                document.getElementById('changedHexagramMeaning').textContent = result.changed_hexagram.meaning || '无';
+                log('显示变卦信息');
+            } else {
+                changedHexagram.style.display = 'none';
+                log('无变卦信息');
+            }
+        }
+
         document.getElementById('questionForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const question = document.getElementById('question').value.trim();
             if (!question) {
                 alert('请输入问题');
+                log('错误：问题不能为空', 'error');
                 return;
             }
 
             // 显示加载动画
             document.querySelector('.loading').style.display = 'block';
             document.querySelector('.result-section').style.display = 'none';
+            document.getElementById('aiInterpretation').style.display = 'none';
+            log('开始求卦...');
 
             try {
                 const response = await fetch('/cast', {
@@ -137,69 +294,109 @@
                 }
 
                 const result = await response.json();
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                currentResult = result;  // 保存结果
+                log('求卦成功');
                 displayResult(result);
             } catch (error) {
+                log(`错误：${error.message}`, 'error');
                 alert(error.message);
             } finally {
                 document.querySelector('.loading').style.display = 'none';
             }
         });
 
-        function displayResult(result) {
-            // 显示结果区域
-            document.querySelector('.result-section').style.display = 'block';
-
-            // 更新问题
-            document.getElementById('questionResult').textContent = result.question;
-
-            // 更新本卦信息
-            document.getElementById('hexagramName').textContent = result.hexagram_name;
-            document.getElementById('hexagramDescription').textContent = result.description;
-            document.getElementById('hexagramMeaning').textContent = result.meaning;
-
-            // 更新上卦信息
-            document.getElementById('upperTrigramName').textContent = result.upper_trigram.name;
-            document.getElementById('upperTrigramNature').textContent = result.upper_trigram.nature || '未知';
-            document.getElementById('upperTrigramCharacter').textContent = result.upper_trigram.character || '未知';
-            document.getElementById('upperTrigramElement').textContent = result.upper_trigram.element || '未知';
-
-            // 更新下卦信息
-            document.getElementById('lowerTrigramName').textContent = result.lower_trigram.name;
-            document.getElementById('lowerTrigramNature').textContent = result.lower_trigram.nature || '未知';
-            document.getElementById('lowerTrigramCharacter').textContent = result.lower_trigram.character || '未知';
-            document.getElementById('lowerTrigramElement').textContent = result.lower_trigram.element || '未知';
-
-            // 更新爻位信息
-            const yaoPositionsContainer = document.getElementById('yaoPositions');
-            yaoPositionsContainer.innerHTML = '';
-            result.lines.sort((a, b) => b.position - a.position).forEach(line => {
-                const yaoDiv = document.createElement('div');
-                yaoDiv.className = 'p-4 bg-gray-50 rounded-lg';
-                yaoDiv.innerHTML = `
-                    <div class="flex items-center mb-2">
-                        <span class="hexagram-symbol mr-2">${line.symbol}</span>
-                        <span class="font-medium">第${line.position}爻: ${line.type}</span>
-                    </div>
-                    <div class="ml-4 space-y-1">
-                        <p>${line.yao_text.symbol}: ${line.yao_text.description}</p>
-                        <p>含义: ${line.yao_text.meaning}</p>
-                        ${line.is_changing ? `<p class="text-indigo-600">变爻: ${line.yao_text.change_meaning}</p>` : ''}
-                    </div>
-                `;
-                yaoPositionsContainer.appendChild(yaoDiv);
-            });
-
-            // 更新变卦信息
-            const changedHexagramSection = document.getElementById('changedHexagram');
-            if (result.has_changes && result.changed_hexagram) {
-                changedHexagramSection.style.display = 'block';
-                document.getElementById('changedHexagramName').textContent = result.changed_hexagram.name;
-                document.getElementById('changedHexagramDescription').textContent = result.changed_hexagram.description;
-                document.getElementById('changedHexagramMeaning').textContent = result.changed_hexagram.meaning;
-            } else {
-                changedHexagramSection.style.display = 'none';
+        document.getElementById('downloadBtn').addEventListener('click', async () => {
+            if (!currentResult) {
+                alert('请先进行卦象解析');
+                log('错误：未找到可下载的结果', 'error');
+                return;
             }
-        }
+
+            try {
+                log('开始下载解析结果...');
+                const response = await fetch('/download_result', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(currentResult)
+                });
+
+                if (!response.ok) {
+                    throw new Error('下载失败');
+                }
+
+                // 创建一个临时链接来下载文件
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `易经解析_${new Date().toISOString().slice(0,19).replace(/[-:]/g, '')}.md`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                log('下载完成');
+            } catch (error) {
+                log(`错误：${error.message}`, 'error');
+                alert(error.message);
+            }
+        });
+
+        document.getElementById('aiInterpretBtn').addEventListener('click', async () => {
+            if (!currentResult) {
+                alert('请先进行卦象解析');
+                log('错误：未找到可解读的卦象', 'error');
+                return;
+            }
+
+            // 显示加载动画
+            document.querySelector('.loading').style.display = 'block';
+            log('开始AI解读...');
+
+            try {
+                const response = await fetch('/ai_interpret', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ...currentResult,
+                        question: document.getElementById('question').value.trim()
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('AI解读失败');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    // 显示AI解读结果
+                    document.getElementById('aiInterpretation').style.display = 'block';
+                    document.getElementById('aiSituation').textContent = result.sections['整体形势'] || '无';
+                    document.getElementById('aiAdvice').textContent = result.sections['具体建议'] || '无';
+                    document.getElementById('aiWarnings').textContent = result.sections['注意事项'] || '无';
+                    document.getElementById('aiDirection').textContent = result.sections['发展方向'] || '无';
+                    document.getElementById('aiAction').textContent = result.sections['行动建议'] || '无';
+                    log('AI解读完成');
+                } else {
+                    throw new Error(result.error || 'AI解读失败');
+                }
+            } catch (error) {
+                log(`错误：${error.message}`, 'error');
+                alert(error.message);
+            } finally {
+                document.querySelector('.loading').style.display = 'none';
+            }
+        });
+
+        // 初始化日志
+        log('系统初始化完成');
     </script>
 </body>
 </html> 
