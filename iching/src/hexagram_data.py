@@ -640,10 +640,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第十二卦
-    "坤乾": {
+    "乾坤": {
         "name": "否",
-        "upper_trigram": "坤",
-        "lower_trigram": "乾",
+        "upper_trigram": "乾",
+        "lower_trigram": "坤",
         "description": "否之匪人，不利君子贞，大往小来",
         "meaning": "闭塞不通，万物不交。内外阻隔，诸事不顺。",
         "yao_texts": {
@@ -1584,10 +1584,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第三十三卦
-    "艮巽": {
+    "乾艮": {
         "name": "遁",
-        "upper_trigram": "艮",
-        "lower_trigram": "巽",
+        "upper_trigram": "乾",
+        "lower_trigram": "艮",
         "description": "亨，小利贞",
         "meaning": "退避。表示退避的状态。通达，小有利于正固。",
         "yao_texts": {
@@ -2466,10 +2466,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第五十九卦
-    "坎巽": {
+    "巽坎": {
         "name": "涣",
-        "upper_trigram": "坎",
-        "lower_trigram": "巽",
+        "upper_trigram": "巽",
+        "lower_trigram": "坎",
         "description": "亨，王假有庙，利涉大川，利贞",
         "meaning": "涣散。表示分散、消散的状态。君王来到宗庙，利于渡过大河，利于正固。",
         "yao_texts": {

@@ -6,6 +6,7 @@ import datetime
 import os
 import logging
 import markdown2  # 添加markdown2库
+import sys
 
 # 配置日志
 logging.basicConfig(
@@ -15,9 +16,13 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-# 关闭Flask的开发服务器日志
-import logging as flask_logging
-flask_logging.getLogger('werkzeug').setLevel(logging.ERROR)
+# 完全禁用所有日志输出
+logging.getLogger('werkzeug').disabled = True
+logging.getLogger('flask.app').disabled = True
+app.logger.disabled = True
+# 禁用Flask的访问日志
+sys.stdout = open('/dev/null', 'w')
+sys.stderr = open('/dev/null', 'w')
 
 iching = IChing()
 ai_interpreter = AIInterpreter()
