@@ -10,11 +10,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# 加载环境变量
+load_dotenv()
+
 class AIInterpreter:
     def __init__(self):
-        load_dotenv()
-        # 使用环境变量中的API密钥
-        self.api_key = os.getenv("OPENAI_API_KEY", "sk-e1a39e17a78c4ee3aa5151ac9b08b135")
+        self.api_key = os.getenv('DEEPSEEK_API_KEY')
+        if not self.api_key:
+            raise ValueError("DEEPSEEK_API_KEY not found in environment variables")
         self.client = OpenAI(
             api_key=self.api_key,
             base_url="https://api.deepseek.com/v1"
