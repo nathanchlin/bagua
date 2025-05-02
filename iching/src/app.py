@@ -75,29 +75,29 @@ def download_result():
         
         logger.info(f"开始生成下载文件: {data.get('name', '未知卦象')}")
         
-        # 生成Markdown内容
-        md_content = f"""# 周易卦象解析结果
+        # 生成文本内容
+        text_content = f"""周易卦象解析结果
 
-## 所问问题
+所问问题：
 {data.get('question', '无')}
 
-## 本卦
-- **卦名**：{data.get('name', '无')}
-- **卦辞**：{data.get('description', '无')}
-- **卦义**：{data.get('meaning', '无')}
+本卦：
+卦名：{data.get('name', '无')}
+卦辞：{data.get('description', '无')}
+卦义：{data.get('meaning', '无')}
 
-## 上下卦
-### 上卦（{data.get('upper_trigram', {}).get('name', '无')}）
-- **性质**：{data.get('upper_trigram', {}).get('nature', '无')}
-- **特性**：{data.get('upper_trigram', {}).get('characteristic', '无')}
-- **五行**：{data.get('upper_trigram', {}).get('element', '无')}
+上下卦：
+上卦（{data.get('upper_trigram', {}).get('name', '无')}）：
+性质：{data.get('upper_trigram', {}).get('nature', '无')}
+特性：{data.get('upper_trigram', {}).get('characteristic', '无')}
+五行：{data.get('upper_trigram', {}).get('element', '无')}
 
-### 下卦（{data.get('lower_trigram', {}).get('name', '无')}）
-- **性质**：{data.get('lower_trigram', {}).get('nature', '无')}
-- **特性**：{data.get('lower_trigram', {}).get('characteristic', '无')}
-- **五行**：{data.get('lower_trigram', {}).get('element', '无')}
+下卦（{data.get('lower_trigram', {}).get('name', '无')}）：
+性质：{data.get('lower_trigram', {}).get('nature', '无')}
+特性：{data.get('lower_trigram', {}).get('characteristic', '无')}
+五行：{data.get('lower_trigram', {}).get('element', '无')}
 
-## 爻位
+爻位：
 """
         # 添加爻位信息
         yao_texts = data.get('yao_texts', {})
@@ -105,112 +105,41 @@ def download_result():
             for position in sorted(yao_texts.keys(), key=lambda x: int(str(x)) if str(x).isdigit() else 0, reverse=True):
                 yao = yao_texts[position]
                 yao_type = yao.get('type', '')  # 获取爻的类型（老阳、老阴、少阳、少阴）
-                md_content += f"""### 第{position}爻（{yao_type}）
-- **符号**：{yao.get('symbol', '无')}
-- **描述**：{yao.get('description', '无')}
-- **含义**：{yao.get('meaning', '无')}"""
+                text_content += f"""第{position}爻（{yao_type}）：
+符号：{yao.get('symbol', '无')}
+描述：{yao.get('description', '无')}
+含义：{yao.get('meaning', '无')}"""
                 
                 if yao.get('change_meaning'):
-                    md_content += f"\n- **变爻**：{yao.get('change_meaning', '无')}"
-                md_content += "\n\n"
+                    text_content += f"\n变爻：{yao.get('change_meaning', '无')}"
+                text_content += "\n\n"
 
         # 添加变卦信息
         if data.get('changed_hexagram'):
             changed = data['changed_hexagram']
-            md_content += f"""## 变卦
-- **卦名**：{changed.get('name', '无')}
-- **卦辞**：{changed.get('description', '无')}
-- **卦义**：{changed.get('meaning', '无')}
+            text_content += f"""变卦：
+卦名：{changed.get('name', '无')}
+卦辞：{changed.get('description', '无')}
+卦义：{changed.get('meaning', '无')}
 """
 
         # 添加生成时间
-        md_content += f"\n\n---\n生成时间：{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
-
-        # 将Markdown转换为HTML
-        html_content = markdown2.markdown(md_content, extras=['tables', 'fenced-code-blocks'])
-        
-        # 添加HTML样式
-        html_content = f"""<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>易经解析结果</title>
-    <style>
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            color: #333;
-        }}
-        h1, h2, h3, h4, h5, h6 {{
-            color: #2c3e50;
-            margin-top: 24px;
-            margin-bottom: 16px;
-            font-weight: 600;
-            line-height: 1.25;
-        }}
-        h1 {{
-            font-size: 2em;
-            border-bottom: 1px solid #eaecef;
-            padding-bottom: 0.3em;
-        }}
-        h2 {{
-            font-size: 1.5em;
-            border-bottom: 1px solid #eaecef;
-            padding-bottom: 0.3em;
-        }}
-        h3 {{
-            font-size: 1.25em;
-        }}
-        p {{
-            margin-bottom: 16px;
-        }}
-        ul, ol {{
-            padding-left: 2em;
-            margin-bottom: 16px;
-        }}
-        li {{
-            margin-bottom: 0.5em;
-        }}
-        strong {{
-            font-weight: 600;
-        }}
-        hr {{
-            height: 0.25em;
-            padding: 0;
-            margin: 24px 0;
-            background-color: #e1e4e8;
-            border: 0;
-        }}
-        blockquote {{
-            padding: 0 1em;
-            color: #6a737d;
-            border-left: 0.25em solid #dfe2e5;
-            margin: 0 0 16px 0;
-        }}
-    </style>
-</head>
-<body>
-{html_content}
-</body>
-</html>"""
+        text_content += f"\n---\n生成时间：{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
 
         # 创建内存文件对象
         buffer = io.BytesIO()
-        buffer.write(html_content.encode('utf-8'))
+        buffer.write(text_content.encode('utf-8'))
         buffer.seek(0)
 
         # 生成文件名
-        filename = f"易经解析_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
+        filename = f"易经解析_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
         logger.info(f"文件生成完成: {filename}")
         
         return send_file(
             buffer,
             as_attachment=True,
             download_name=filename,
-            mimetype='text/html'
+            mimetype='text/plain'
         )
 
     except Exception as e:
