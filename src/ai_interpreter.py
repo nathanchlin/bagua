@@ -5,7 +5,7 @@ from openai import OpenAI
 
 # 配置日志
 logging.basicConfig(
-    level=logging.CRITICAL,  # 只显示严重错误级别的日志
+    level=logging.ERROR,  # 只显示错误级别的日志
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
@@ -47,25 +47,7 @@ class AIInterpreter:
                 messages=[
                     {
                         "role": "system",
-                        "content": """你是一位精通易经的专家，擅长解读卦象并给出切实可行的建议。
-请按照以下固定格式进行解读，每个部分都需要以标题开头：
-
-一、整体形势分析
-[在这里详细分析当前整体形势]
-
-二、具体建议
-[在这里提供具体可行的建议]
-
-三、需要注意的事项
-[在这里列出需要特别注意的要点]
-
-四、发展方向
-[在这里分析未来可能的发展方向]
-
-五、行动建议
-[在这里给出具体的行动建议]
-
-请确保每个部分都有实质性的内容，避免空泛的表述。回答要具体、务实、有针对性。"""
+                        "content": "你是一位精通易经的专家，擅长解读卦象并给出切实可行的建议。请从以下几个方面进行解读：\n1. 整体形势分析\n2. 具体建议\n3. 需要注意的事项\n4. 发展方向\n5. 行动建议"
                     },
                     {
                         "role": "user",
@@ -169,64 +151,30 @@ class AIInterpreter:
         """将AI解读分解为不同部分"""
         logger.info("开始解析AI解读结果")
         sections = {
-            "整体形势": "暂无分析",
-            "具体建议": "暂无建议",
-            "注意事项": "暂无注意事项",
-            "发展方向": "暂无方向",
-            "行动建议": "暂无建议"
-        }
-        
-        # 定义可能的部分标题变体
-        section_variants = {
-            "整体形势": ["整体形势", "整体分析", "形势分析", "1.", "一、"],
-            "具体建议": ["具体建议", "建议", "2.", "二、"],
-            "注意事项": ["注意事项", "需要注意", "3.", "三、"],
-            "发展方向": ["发展方向", "未来方向", "4.", "四、"],
-            "行动建议": ["行动建议", "具体行动", "5.", "五、"]
+            "整体形势": "",
+            "具体建议": "",
+            "注意事项": "",
+            "发展方向": "",
+            "行动建议": ""
         }
         
         current_section = None
-        content_buffer = []
         lines = interpretation.split('\n')
         
         for line in lines:
             line = line.strip()
             if not line:
                 continue
-            
+                
             # 检查是否是新的部分标题
-            found_section = False
-            for section, variants in section_variants.items():
-                for variant in variants:
-                    if variant.lower() in line.lower():
-                        # 如果有累积的内容，保存到当前部分
-                        if current_section and content_buffer:
-                            sections[current_section] = ' '.join(content_buffer).strip()
-                            content_buffer = []
-                        
-                        current_section = section
-                        found_section = True
-                        break
-                if found_section:
+            for section in sections.keys():
+                if section in line or f"{len(str(list(sections.keys()).index(section) + 1))}." in line:
+                    current_section = section
+                    logger.debug(f"找到新的部分: {section}")
                     break
-            
-            # 如果不是标题且有当前部分，添加到内容缓冲区
-            if not found_section and current_section:
-                # 去掉可能的序号前缀
-                cleaned_line = line
-                for prefix in ["1.", "2.", "3.", "4.", "5.", "一、", "二、", "三、", "四、", "五、"]:
-                    if cleaned_line.startswith(prefix):
-                        cleaned_line = cleaned_line[len(prefix):].strip()
-                content_buffer.append(cleaned_line)
-        
-        # 保存最后一个部分的内容
-        if current_section and content_buffer:
-            sections[current_section] = ' '.join(content_buffer).strip()
-        
-        # 确保所有部分都有内容
-        for section in sections:
-            if not sections[section] or sections[section].isspace():
-                sections[section] = f"暂无{section}信息"
-        
+                    
+            if current_section and line not in sections.keys():
+                sections[current_section] += line + "\n"
+                
         logger.info("AI解读结果解析完成")
         return sections 

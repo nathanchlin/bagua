@@ -155,47 +155,40 @@
         </div>
     </div>
 
+    <!-- 日志显示区域 -->
+    <div class="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4" style="max-height: 200px; overflow-y: auto;">
+        <div class="flex justify-between items-center mb-2">
+            <h3 class="text-lg font-medium">系统日志</h3>
+            <button id="clearLogBtn" class="text-sm bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">
+                清除日志
+            </button>
+        </div>
+        <pre id="logArea" class="text-sm font-mono whitespace-pre-wrap"></pre>
+    </div>
+
     <script>
         let currentResult = null;  // 存储当前的解析结果
+        
+        // 日志功能
+        function log(message, type = 'info') {
+            const logArea = document.getElementById('logArea');
+            const timestamp = new Date().toLocaleTimeString();
+            const colorClass = type === 'error' ? 'text-red-400' : 
+                             type === 'warning' ? 'text-yellow-400' : 
+                             'text-green-400';
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = colorClass;
+            logEntry.textContent = `[${timestamp}] ${message}`;
+            
+            logArea.appendChild(logEntry);
+            logArea.scrollTop = logArea.scrollHeight;
+        }
 
-        document.getElementById('questionForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const question = document.getElementById('question').value.trim();
-            if (!question) {
-                alert('请输入问题');
-                return;
-            }
-
-            // 显示加载动画
-            document.querySelector('.loading').style.display = 'block';
-            document.querySelector('.result-section').style.display = 'none';
-            document.getElementById('aiInterpretation').style.display = 'none';
-
-            try {
-                const response = await fetch('/cast', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `question=${encodeURIComponent(question)}`
-                });
-
-                if (!response.ok) {
-                    throw new Error('求卦失败');
-                }
-
-                const result = await response.json();
-                if (result.error) {
-                    throw new Error(result.error);
-                }
-                
-                currentResult = result;  // 保存结果
-                displayResult(result);
-            } catch (error) {
-                alert(error.message);
-            } finally {
-                document.querySelector('.loading').style.display = 'none';
-            }
+        // 清除日志
+        document.getElementById('clearLogBtn').addEventListener('click', () => {
+            document.getElementById('logArea').innerHTML = '';
+            log('日志已清除');
         });
 
         function displayResult(result) {
@@ -203,11 +196,13 @@
             
             // 显示问题
             document.getElementById('questionResult').textContent = result.question || '无';
+            log(`显示问题: ${result.question || '无'}`);
             
             // 显示本卦信息
             document.getElementById('hexagramName').textContent = result.name || '无';
             document.getElementById('hexagramDescription').textContent = result.description || '无';
             document.getElementById('hexagramMeaning').textContent = result.meaning || '无';
+            log(`显示卦象: ${result.name || '无'}`);
             
             // 显示上下卦信息
             const upperTrigram = result.upper_trigram || {};
@@ -231,6 +226,8 @@
             document.getElementById('lowerTrigramCharacter').parentElement.style.display = '';
             document.getElementById('lowerTrigramElement').parentElement.style.display = '';
             
+            log(`上卦: ${upperTrigram.name || '无'}, 下卦: ${lowerTrigram.name || '无'}`);
+            
             // 显示爻位信息
             const yaoPositionsContainer = document.getElementById('yaoPositions');
             yaoPositionsContainer.innerHTML = '';
@@ -251,6 +248,7 @@
                         </div>
                     `;
                     yaoPositionsContainer.appendChild(yaoDiv);
+                    log(`显示第${position}爻信息`);
                 });
             
             // 显示变卦信息
@@ -260,18 +258,66 @@
                 document.getElementById('changedHexagramName').textContent = result.changed_hexagram.name || '无';
                 document.getElementById('changedHexagramDescription').textContent = result.changed_hexagram.description || '无';
                 document.getElementById('changedHexagramMeaning').textContent = result.changed_hexagram.meaning || '无';
+                log('显示变卦信息');
             } else {
                 changedHexagram.style.display = 'none';
+                log('无变卦信息');
             }
         }
+
+        document.getElementById('questionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const question = document.getElementById('question').value.trim();
+            if (!question) {
+                alert('请输入问题');
+                log('错误：问题不能为空', 'error');
+                return;
+            }
+
+            // 显示加载动画
+            document.querySelector('.loading').style.display = 'block';
+            document.querySelector('.result-section').style.display = 'none';
+            document.getElementById('aiInterpretation').style.display = 'none';
+            log('开始求卦...');
+
+            try {
+                const response = await fetch('/cast', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `question=${encodeURIComponent(question)}`
+                });
+
+                if (!response.ok) {
+                    throw new Error('求卦失败');
+                }
+
+                const result = await response.json();
+                if (result.error) {
+                    throw new Error(result.error);
+                }
+                
+                currentResult = result;  // 保存结果
+                log('求卦成功');
+                displayResult(result);
+            } catch (error) {
+                log(`错误：${error.message}`, 'error');
+                alert(error.message);
+            } finally {
+                document.querySelector('.loading').style.display = 'none';
+            }
+        });
 
         document.getElementById('downloadBtn').addEventListener('click', async () => {
             if (!currentResult) {
                 alert('请先进行卦象解析');
+                log('错误：未找到可下载的结果', 'error');
                 return;
             }
 
             try {
+                log('开始下载解析结果...');
                 const response = await fetch('/download_result', {
                     method: 'POST',
                     headers: {
@@ -293,7 +339,10 @@
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                log('下载完成');
             } catch (error) {
+                log(`错误：${error.message}`, 'error');
                 alert(error.message);
             }
         });
@@ -301,11 +350,13 @@
         document.getElementById('aiInterpretBtn').addEventListener('click', async () => {
             if (!currentResult) {
                 alert('请先进行卦象解析');
+                log('错误：未找到可解读的卦象', 'error');
                 return;
             }
 
             // 显示加载动画
             document.querySelector('.loading').style.display = 'block';
+            log('开始AI解读...');
 
             try {
                 const response = await fetch('/ai_interpret', {
@@ -332,15 +383,20 @@
                     document.getElementById('aiWarnings').textContent = result.sections['注意事项'] || '无';
                     document.getElementById('aiDirection').textContent = result.sections['发展方向'] || '无';
                     document.getElementById('aiAction').textContent = result.sections['行动建议'] || '无';
+                    log('AI解读完成');
                 } else {
                     throw new Error(result.error || 'AI解读失败');
                 }
             } catch (error) {
+                log(`错误：${error.message}`, 'error');
                 alert(error.message);
             } finally {
                 document.querySelector('.loading').style.display = 'none';
             }
         });
+
+        // 初始化日志
+        log('系统初始化完成');
     </script>
 </body>
 </html> 

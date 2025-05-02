@@ -8,7 +8,7 @@ import logging
 
 # 配置日志
 logging.basicConfig(
-    level=logging.CRITICAL,  # 只显示严重错误级别的日志
+    level=logging.ERROR,  # 只显示错误级别的日志
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 )
 logger = logging.getLogger(__name__)
@@ -16,10 +16,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 # 关闭Flask的开发服务器日志
 import logging as flask_logging
-flask_logging.getLogger('werkzeug').setLevel(logging.CRITICAL)
-
-# 关闭Flask的调试输出
-app.logger.setLevel(logging.CRITICAL)
+flask_logging.getLogger('werkzeug').setLevel(logging.ERROR)
 
 iching = IChing()
 ai_interpreter = AIInterpreter()
