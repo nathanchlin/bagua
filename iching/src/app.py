@@ -5,6 +5,7 @@ import io
 import datetime
 import os
 import logging
+import markdown2  # 添加markdown2库
 
 # 配置日志
 logging.basicConfig(
@@ -120,20 +121,91 @@ def download_result():
         # 添加生成时间
         md_content += f"\n\n---\n生成时间：{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
 
+        # 将Markdown转换为HTML
+        html_content = markdown2.markdown(md_content, extras=['tables', 'fenced-code-blocks'])
+        
+        # 添加HTML样式
+        html_content = f"""<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>易经解析结果</title>
+    <style>
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            color: #333;
+        }}
+        h1, h2, h3, h4, h5, h6 {{
+            color: #2c3e50;
+            margin-top: 24px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            line-height: 1.25;
+        }}
+        h1 {{
+            font-size: 2em;
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+        }}
+        h2 {{
+            font-size: 1.5em;
+            border-bottom: 1px solid #eaecef;
+            padding-bottom: 0.3em;
+        }}
+        h3 {{
+            font-size: 1.25em;
+        }}
+        p {{
+            margin-bottom: 16px;
+        }}
+        ul, ol {{
+            padding-left: 2em;
+            margin-bottom: 16px;
+        }}
+        li {{
+            margin-bottom: 0.5em;
+        }}
+        strong {{
+            font-weight: 600;
+        }}
+        hr {{
+            height: 0.25em;
+            padding: 0;
+            margin: 24px 0;
+            background-color: #e1e4e8;
+            border: 0;
+        }}
+        blockquote {{
+            padding: 0 1em;
+            color: #6a737d;
+            border-left: 0.25em solid #dfe2e5;
+            margin: 0 0 16px 0;
+        }}
+    </style>
+</head>
+<body>
+{html_content}
+</body>
+</html>"""
+
         # 创建内存文件对象
         buffer = io.BytesIO()
-        buffer.write(md_content.encode('utf-8'))
+        buffer.write(html_content.encode('utf-8'))
         buffer.seek(0)
 
         # 生成文件名
-        filename = f"易经解析_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+        filename = f"易经解析_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.html"
         logger.info(f"文件生成完成: {filename}")
         
         return send_file(
             buffer,
             as_attachment=True,
             download_name=filename,
-            mimetype='text/markdown'
+            mimetype='text/html'
         )
 
     except Exception as e:

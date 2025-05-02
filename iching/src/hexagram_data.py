@@ -90,7 +90,7 @@ HEXAGRAM_MAPS = {
     "震乾": "大壮",  # 第三十四卦
     "离坤": "晋",    # 第三十五卦
     "坤离": "明夷",  # 第三十六卦
-    "离坤": "家人",  # 第三十七卦
+    "巽离": "家人",  # 第三十七卦
     "离兑": "睽",    # 第三十八卦
     "坎艮": "蹇",    # 第三十九卦
     "震坎": "解",    # 第四十卦
@@ -1630,10 +1630,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第三十四卦
-    "坤巽": {
+    "震乾": {
         "name": "大壮",
-        "upper_trigram": "坤",
-        "lower_trigram": "巽",
+        "upper_trigram": "震",
+        "lower_trigram": "乾",
         "description": "利贞",
         "meaning": "大壮。表示强大、壮盛的状态。利于正固。",
         "yao_texts": {
@@ -1676,10 +1676,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第三十五卦
-    "坤坎": {
+    "离坤": {
         "name": "晋",
-        "upper_trigram": "坤",
-        "lower_trigram": "坎",
+        "upper_trigram": "离",
+        "lower_trigram": "坤",
         "description": "康侯用锡马蕃庶，昼日三接",
         "meaning": "进步。表示进步、发展的状态。康侯用锡马繁衍后代，白天三次接娶。",
         "yao_texts": {
@@ -2556,10 +2556,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第六十一卦
-    "兑巽": {
+    "巽兑": {
         "name": "中孚",
-        "upper_trigram": "兑",
-        "lower_trigram": "巽",
+        "upper_trigram": "巽",
+        "lower_trigram": "兑",
         "description": "豚鱼吉，利涉大川，利贞",
         "meaning": "诚信。表示诚信、信实的状态。豚鱼吉祥，利于渡过大河，利于正固。",
         "yao_texts": {
@@ -2777,10 +2777,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第三十七卦
-    "离坤": {
+    "巽离": {
         "name": "家人",
-        "upper_trigram": "离",
-        "lower_trigram": "坤",
+        "upper_trigram": "巽",
+        "lower_trigram": "离",
         "description": "利女贞",
         "meaning": "家庭和睦，内外和顺。持家有道，事业兴旺。",
         "yao_texts": {
