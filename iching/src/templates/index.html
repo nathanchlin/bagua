@@ -496,11 +496,31 @@
                 return;
             }
             
-            const blob = new Blob([JSON.stringify(aiResult, null, 2)], { type: 'application/json' });
+            // 生成Markdown格式的内容
+            const markdownContent = `# AI解读结果
+生成时间：${new Date().toLocaleString()}
+
+## 整体形势
+${aiResult.situation}
+
+## 具体建议
+${aiResult.advice}
+
+## 注意事项
+${aiResult.warnings}
+
+## 发展方向
+${aiResult.direction}
+
+## 行动建议
+${aiResult.action}
+`;
+            
+            const blob = new Blob([markdownContent], { type: 'text/markdown' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `AI解读结果_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            a.download = `AI解读结果_${new Date().toISOString().replace(/[:.]/g, '-')}.md`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
