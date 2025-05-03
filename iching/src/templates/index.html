@@ -174,7 +174,16 @@
 
             <!-- AI解读结果 -->
             <div id="aiInterpretation" class="mb-6 hidden">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">AI解读</h3>
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900">AI解读</h3>
+                    <button id="saveAIResultBtn" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
+                        </svg>
+                        保存AI解读结果
+                    </button>
+                </div>
                 <div class="space-y-4">
                     <div class="bg-purple-50 rounded-lg p-4">
                         <h4 class="font-medium text-purple-900 mb-2">整体形势</h4>
@@ -464,6 +473,33 @@
 
         // 初始化日志
         log('系统初始化完成');
+
+        // 保存AI解读结果
+        document.getElementById('saveAIResultBtn').addEventListener('click', function() {
+            const aiInterpretation = document.getElementById('aiInterpretation');
+            if (aiInterpretation.classList.contains('hidden')) {
+                alert('请先获取AI解读结果');
+                return;
+            }
+            
+            const aiResult = {
+                situation: document.getElementById('aiSituation').textContent,
+                advice: document.getElementById('aiAdvice').textContent,
+                warnings: document.getElementById('aiWarnings').textContent,
+                direction: document.getElementById('aiDirection').textContent,
+                action: document.getElementById('aiAction').textContent
+            };
+            
+            const blob = new Blob([JSON.stringify(aiResult, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `AI解读结果_${new Date().toISOString().replace(/[:.]/g, '-')}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
     </script>
 </body>
 </html> 
