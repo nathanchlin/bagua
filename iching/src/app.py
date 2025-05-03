@@ -20,9 +20,6 @@ app = Flask(__name__)
 logging.getLogger('werkzeug').disabled = True
 logging.getLogger('flask.app').disabled = True
 app.logger.disabled = True
-# 禁用Flask的访问日志
-sys.stdout = open('/dev/null', 'w')
-sys.stderr = open('/dev/null', 'w')
 
 iching = IChing()
 ai_interpreter = AIInterpreter()

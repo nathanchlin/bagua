@@ -50,15 +50,15 @@ class IChing:
         模拟传统的求卦过程，返回爻的数值：6(老阴)、7(少阳)、8(少阴)、9(老阳)
         """
         # 使用概率分布来模拟传统的求卦概率
-        # 老阳(9): 3/16, 少阳(7): 5/16, 少阴(8): 7/16, 老阴(6): 1/16
+        # 老阳(9): 4/16, 少阳(7): 4/16, 少阴(8): 4/16, 老阴(6): 4/16
         rand = random.random()
-        if rand < 1/16:    # 1/16
+        if rand < 4/16:    # 4/16
             return 6       # 老阴
-        elif rand < 8/16:  # 7/16
+        elif rand < 8/16:  # 4/16
             return 8       # 少阴
-        elif rand < 13/16: # 5/16
+        elif rand < 12/16: # 4/16
             return 7       # 少阳
-        else:             # 3/16
+        else:             # 4/16
             return 9       # 老阳
 
     def is_changing_line(self, value: int) -> bool:
@@ -117,8 +117,9 @@ class IChing:
     def get_changed_hexagram(self, hexagram: List[int]) -> List[int]:
         """
         获取变卦的爻值
+        老阳(9)变少阴(8)，老阴(6)变少阳(7)
         """
-        return [7 if v == 9 else 8 if v == 6 else v for v in hexagram]
+        return [8 if v == 9 else 7 if v == 6 else v for v in hexagram]
 
     def get_hexagram_info(self, hexagram_key: str) -> dict:
         """根据卦象键获取卦象的详细信息"""
@@ -210,9 +211,7 @@ class IChing:
             logger.info(f"变爻位置: {changing_yaos}")
             
             # 生成变卦
-            changed_hexagram = hexagram.copy()
-            for i in changing_yaos:
-                changed_hexagram[i] = 7 if changed_hexagram[i] == 9 else 8  # 老阳变少阴，老阴变少阳
+            changed_hexagram = self.get_changed_hexagram(hexagram)
             logger.info(f"变卦: {changed_hexagram}")
             
             # 获取变卦信息
@@ -222,6 +221,23 @@ class IChing:
             if not changed_info and len(changing_yaos) > 0:
                 logger.error(f"无法获取变卦信息: {changed_key}")
                 raise ValueError(f"无法获取变卦信息: {changed_key}")
+            
+            # 确保每个爻都有正确的类型
+            for i, yao_value in enumerate(hexagram):
+                position = str(i + 1)
+                if position not in hexagram_info['yao_texts']:
+                    hexagram_info['yao_texts'][position] = {}
+                hexagram_info['yao_texts'][position]['type'] = self.YAO_TYPES[yao_value][0]
+                hexagram_info['yao_texts'][position]['symbol'] = self.YAO_TYPES[yao_value][1]
+            
+            # 如果有变卦，确保变卦的爻位信息也被正确处理
+            if changed_info:
+                for i, yao_value in enumerate(changed_hexagram):
+                    position = str(i + 1)
+                    if position not in changed_info['yao_texts']:
+                        changed_info['yao_texts'][position] = {}
+                    changed_info['yao_texts'][position]['type'] = self.YAO_TYPES[yao_value][0]
+                    changed_info['yao_texts'][position]['symbol'] = self.YAO_TYPES[yao_value][1]
             
             # 根据变爻数量选择解释方式
             num_changes = len(changing_yaos)
@@ -249,101 +265,69 @@ class IChing:
                 yao_pos1, yao_pos2 = sorted([p + 1 for p in changing_yaos])
                 yao_text1 = hexagram_info['yao_texts'].get(str(yao_pos1), {})
                 yao_text2 = hexagram_info['yao_texts'].get(str(yao_pos2), {})
-                interpretation_rules = "二爻变：以本卦二变爻辞占，仍以上爻为主。以上位爻辞为主，下位爻辞为辅，结合两者推论所问事项的吉凶。"
-                interpretation = f"主要爻辞（第{yao_pos2}爻）：{yao_text2.get('description', '无')}\n"
-                interpretation += f"含义：{yao_text2.get('meaning', '无')}\n"
-                interpretation += f"次要爻辞（第{yao_pos1}爻）：{yao_text1.get('description', '无')}\n"
-                interpretation += f"含义：{yao_text1.get('meaning', '无')}"
+                interpretation_rules = "二爻变：以本卦二变爻辞占，仍以上爻为主。根据本卦中这两个变爻的爻辞推论所问事项的吉凶，其中以上爻的爻辞为主。"
+                interpretation = f"变爻位置：第{yao_pos1}爻和第{yao_pos2}爻\n"
+                interpretation += f"第{yao_pos1}爻爻辞：{yao_text1.get('description', '无')}\n"
+                interpretation += f"第{yao_pos1}爻含义：{yao_text1.get('meaning', '无')}\n"
+                interpretation += f"第{yao_pos2}爻爻辞：{yao_text2.get('description', '无')}\n"
+                interpretation += f"第{yao_pos2}爻含义：{yao_text2.get('meaning', '无')}"
             
             elif num_changes == 3:
-                # 三爻变：占本卦及之卦之彖辞，而以本卦为贞，之卦为悔
-                interpretation_rules = "三爻变：占本卦及之卦之彖辞，而以本卦为贞，之卦为悔。前十卦主贞，后十卦主悔。应以本卦和之卦的卦辞作为推论依据。其中，本卦卦辞代表问卦者，之卦卦辞代表问卦者对方；初爻不变的十个卦体（即 '前十卦'），以本卦卦辞为主要依据；初爻变化的十个卦体（即 '后十卦'），以之卦卦辞为主要依据。"
-                interpretation = f"本卦彖辞（贞）：{hexagram_info['description']}\n"
-                interpretation += f"变卦彖辞（悔）：{changed_info['description']}\n"
-                if hexagram[0] in [7, 8]:  # 初爻不变
-                    interpretation += "前十卦，以本卦卦辞为主要依据"
-                else:  # 初爻变
-                    interpretation += "后十卦，以变卦卦辞为主要依据"
+                # 三爻变：以本卦及之卦彖辞占，而以本卦为贞，之卦为悔
+                interpretation_rules = "三爻变：以本卦及之卦彖辞占，而以本卦为贞，之卦为悔。根据本卦和变卦的卦辞推论所问事项的吉凶，其中以本卦为主，变卦为辅。"
+                interpretation = f"本卦彖辞：{hexagram_info['description']}\n"
+                interpretation += f"变卦彖辞：{changed_info['description']}"
             
             elif num_changes == 4:
-                # 四爻变：以之卦二不变爻占，仍以下爻为主
+                # 四爻变：以之卦二不变爻辞占，仍以下爻为主
                 unchanged_yaos = [i for i in range(6) if i not in changing_yaos]
                 yao_pos1, yao_pos2 = sorted([p + 1 for p in unchanged_yaos])
-                yao_text1 = changed_info['yao_texts'][str(yao_pos1)]
-                yao_text2 = changed_info['yao_texts'][str(yao_pos2)]
-                interpretation_rules = "四爻变：以之卦二不变爻占，仍以下爻为主。推论的依据是之卦中的两个不变爻，其中处于下位的不变爻为主，上位的不变爻为次。"
+                yao_text1 = changed_info['yao_texts'].get(str(yao_pos1), {})
+                yao_text2 = changed_info['yao_texts'].get(str(yao_pos2), {})
+                interpretation_rules = "四爻变：以之卦二不变爻辞占，仍以下爻为主。根据变卦中这两个不变爻的爻辞推论所问事项的吉凶，其中以下爻的爻辞为主。"
                 interpretation = f"不变爻位置：第{yao_pos1}爻和第{yao_pos2}爻\n"
-                interpretation += f"主要爻辞（第{yao_pos1}爻）：{yao_text1['description']}\n"
-                interpretation += f"次要爻辞（第{yao_pos2}爻）：{yao_text2['description']}"
+                interpretation += f"第{yao_pos1}爻爻辞：{yao_text1.get('description', '无')}\n"
+                interpretation += f"第{yao_pos1}爻含义：{yao_text1.get('meaning', '无')}\n"
+                interpretation += f"第{yao_pos2}爻爻辞：{yao_text2.get('description', '无')}\n"
+                interpretation += f"第{yao_pos2}爻含义：{yao_text2.get('meaning', '无')}"
             
             elif num_changes == 5:
-                # 五爻变：以之卦不变爻占
+                # 五爻变：以之卦不变爻辞占
                 unchanged_yao = [i for i in range(6) if i not in changing_yaos][0] + 1
-                yao_text = changed_info['yao_texts'][str(unchanged_yao)]
-                interpretation_rules = "五爻变：以之卦不变爻占。推论的依据是之卦中的不变爻。"
+                yao_text = changed_info['yao_texts'].get(str(unchanged_yao), {})
+                interpretation_rules = "五爻变：以之卦不变爻辞占。根据变卦中这个不变爻的爻辞推论所问事项的吉凶。"
                 interpretation = f"不变爻位置：第{unchanged_yao}爻\n"
-                interpretation += f"爻辞：{yao_text['description']}\n"
-                interpretation += f"含义：{yao_text['meaning']}"
+                interpretation += f"爻辞：{yao_text.get('description', '无')}\n"
+                interpretation += f"含义：{yao_text.get('meaning', '无')}"
             
             else:  # num_changes == 6
-                # 六爻变：特殊处理乾变坤或坤变乾
-                if (hexagram_key == '999999' and changed_key == '888888') or \
-                   (hexagram_key == '888888' and changed_key == '999999'):
-                    interpretation_rules = "六爻变：若为《乾》之《坤》或《坤》之《乾》，则占 '二用'，即《乾・用九》的 '群龙无首，吉' 和《坤・用六》的 '利永贞'；余卦占之卦彖辞。"
-                    interpretation = "乾变坤或坤变乾，占'二用'：\n"
-                    interpretation += "乾・用九：群龙无首，吉\n"
-                    interpretation += "坤・用六：利永贞"
-                else:
-                    interpretation_rules = "六爻变：若为《乾》之《坤》或《坤》之《乾》，则占 '二用'，即《乾・用九》的 '群龙无首，吉' 和《坤・用六》的 '利永贞'；余卦占之卦彖辞。"
-                    interpretation = f"变卦彖辞：{changed_info['description']}"
+                # 六爻皆变：以之卦彖辞占
+                interpretation_rules = "六爻皆变：以之卦彖辞占。根据变卦的卦辞推论所问事项的吉凶。"
+                interpretation = f"变卦彖辞：{changed_info['description']}"
             
-            # 生成爻位信息
-            yao_texts = {}
-            for i, yao in enumerate(hexagram):
-                position = 6 - i  # 从下往上数
-                yao_type, yao_symbol = self.YAO_TYPES[yao]
-                
-                # 从卦象数据中获取爻位信息
-                yao_info = hexagram_info.get("yao_texts", {}).get(str(position), {})
-                if not yao_info:  # 如果没有找到对应的爻位信息，使用默认值
-                    yao_info = {
-                        "symbol": f"第{position}爻",
-                        "description": "无爻辞",
-                        "meaning": "无解释"
-                    }
-                
-                # 构建爻位信息
-                yao_data = {
-                    "type": yao_type,
-                    "symbol": yao_info.get("symbol", f"第{position}爻"),
-                    "description": yao_info.get("description", "无爻辞"),
-                    "meaning": yao_info.get("meaning", "无解释")
-                }
-                
-                # 如果是变爻，添加变爻信息
-                if self.is_changing_line(yao):
-                    yao_data["change_meaning"] = yao_info.get("change_meaning", "无变爻解释")
-                
-                yao_texts[str(position)] = yao_data
-            
+            # 构建返回结果
             result = {
+                'question': question,
                 'name': hexagram_info['name'],
                 'description': hexagram_info['description'],
                 'meaning': hexagram_info['meaning'],
                 'upper_trigram': hexagram_info['upper_trigram'],
                 'lower_trigram': hexagram_info['lower_trigram'],
-                'yao_texts': yao_texts,
-                'changing_yaos': [p + 1 for p in changing_yaos],  # 变爻位置（1-6）
-                'num_changes': num_changes,  # 变爻数量
-                'interpretation': interpretation,  # 变爻解释
-                'interpretation_rules': interpretation_rules,  # 变爻解释规则
-                'question': question,  # 添加问题字段
-                'changed_hexagram': {
+                'yao_texts': hexagram_info['yao_texts'],
+                'interpretation': interpretation,
+                'interpretation_rules': interpretation_rules,
+                'changing_yaos': changing_yaos,
+                'num_changes': num_changes
+            }
+            
+            # 如果有变卦，添加变卦信息
+            if changed_info:
+                result['changed_hexagram'] = {
                     'name': changed_info['name'],
                     'description': changed_info['description'],
-                    'meaning': changed_info['meaning']
-                } if num_changes > 0 else None
-            }
+                    'meaning': changed_info['meaning'],
+                    'yao_texts': changed_info['yao_texts']
+                }
             
             return result
             
