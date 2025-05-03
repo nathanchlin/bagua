@@ -43,7 +43,8 @@ def cast():
             return jsonify({'error': '问题不能为空'}), 400
         
         logger.info(f"开始解析问题: {question}")
-        hexagram, changing_lines = iching.generate_hexagram()
+        hexagram = iching.generate_hexagram()
+        changing_lines = [i+1 for i, v in enumerate(hexagram) if v in [6, 9]]
         logger.info(f"生成卦象: {hexagram}, 变爻: {changing_lines}")
         
         result = iching.interpret_hexagram(hexagram, changing_lines, question)
