@@ -238,21 +238,22 @@ class IChing:
             elif num_changes == 1:
                 # 一爻变：以本卦变爻辞占
                 yao_pos = changing_yaos[0] + 1
-                yao_text = hexagram_info['yao_texts'][str(yao_pos)]
+                yao_text = hexagram_info['yao_texts'].get(str(yao_pos), {})
                 interpretation_rules = "一爻变：以本卦变爻辞占。根据本卦中的这一变爻的爻辞推论所问事项的吉凶。"
                 interpretation = f"变爻位置：第{yao_pos}爻\n"
-                interpretation += f"爻辞：{yao_text['description']}\n"
-                interpretation += f"含义：{yao_text['meaning']}"
+                interpretation += f"爻辞：{yao_text.get('description', '无')}\n"
+                interpretation += f"含义：{yao_text.get('meaning', '无')}"
             
             elif num_changes == 2:
                 # 二爻变：以本卦二变爻辞占，仍以上爻为主
                 yao_pos1, yao_pos2 = sorted([p + 1 for p in changing_yaos])
-                yao_text1 = hexagram_info['yao_texts'][str(yao_pos1)]
-                yao_text2 = hexagram_info['yao_texts'][str(yao_pos2)]
-                interpretation_rules = "二爻变：以本卦二变爻辞占，仍以上爻为主。根据本卦的两个变爻辞进行推论，并以上位的那个爻辞为主要依据。"
-                interpretation = f"变爻位置：第{yao_pos1}爻和第{yao_pos2}爻\n"
-                interpretation += f"主要爻辞（第{yao_pos2}爻）：{yao_text2['description']}\n"
-                interpretation += f"次要爻辞（第{yao_pos1}爻）：{yao_text1['description']}"
+                yao_text1 = hexagram_info['yao_texts'].get(str(yao_pos1), {})
+                yao_text2 = hexagram_info['yao_texts'].get(str(yao_pos2), {})
+                interpretation_rules = "二爻变：以本卦二变爻辞占，仍以上爻为主。以上位爻辞为主，下位爻辞为辅，结合两者推论所问事项的吉凶。"
+                interpretation = f"主要爻辞（第{yao_pos2}爻）：{yao_text2.get('description', '无')}\n"
+                interpretation += f"含义：{yao_text2.get('meaning', '无')}\n"
+                interpretation += f"次要爻辞（第{yao_pos1}爻）：{yao_text1.get('description', '无')}\n"
+                interpretation += f"含义：{yao_text1.get('meaning', '无')}"
             
             elif num_changes == 3:
                 # 三爻变：占本卦及之卦之彖辞，而以本卦为贞，之卦为悔
