@@ -29,10 +29,10 @@ class IChing:
 
     # 爻的类型
     YAO_TYPES = {
-        6: ("老阴", "— — ·"),  # 变爻
-        7: ("少阳", "——"),
-        8: ("少阴", "— —"),
-        9: ("老阳", "—— ·")    # 变爻
+        6: ("老阴", "⚋."),  # 变爻
+        7: ("少阳", "⚊"),
+        8: ("少阴", "⚋"),
+        9: ("老阳", "⚊.")    # 变爻
     }
 
     def __init__(self):
@@ -118,7 +118,13 @@ class IChing:
         """
         获取变卦的爻值
         """
-        return [7 if v == 9 else 8 if v == 6 else v for v in hexagram]
+        changed_hexagram = hexagram.copy()
+        for i, yao in enumerate(hexagram):
+            if yao == 9:  # 老阳变少阴
+                changed_hexagram[i] = 8
+            elif yao == 6:  # 老阴变少阳
+                changed_hexagram[i] = 7
+        return changed_hexagram
 
     def get_hexagram_info(self, hexagram_key: str) -> dict:
         """根据卦象键获取卦象的详细信息"""
@@ -218,10 +224,27 @@ class IChing:
                     'question': question
                 }
             
+            # 确保每个爻都有正确的类型和符号
+            for i, yao_value in enumerate(hexagram):
+                position = str(i + 1)
+                if position not in hexagram_info['yao_texts']:
+                    hexagram_info['yao_texts'][position] = {}
+                hexagram_info['yao_texts'][position]['type'] = self.YAO_TYPES[yao_value][0]
+                hexagram_info['yao_texts'][position]['symbol'] = self.YAO_TYPES[yao_value][1]
+            
             # 获取变卦信息
             changed_hexagram = self.get_changed_hexagram(hexagram)
             changed_key = ''.join(str(yao) for yao in changed_hexagram)
             changed_info = self.get_hexagram_info(changed_key)
+            
+            # 确保变卦的每个爻都有正确的类型和符号
+            if changed_info:
+                for i, yao_value in enumerate(changed_hexagram):
+                    position = str(i + 1)
+                    if position not in changed_info['yao_texts']:
+                        changed_info['yao_texts'][position] = {}
+                    changed_info['yao_texts'][position]['type'] = self.YAO_TYPES[yao_value][0]
+                    changed_info['yao_texts'][position]['symbol'] = self.YAO_TYPES[yao_value][1]
             
             # 构建结果
             result = {
