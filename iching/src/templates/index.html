@@ -404,7 +404,6 @@
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
                 log('下载完成');
             } catch (error) {
                 log(`错误：${error.message}`, 'error');
@@ -477,7 +476,7 @@
         // 保存AI解读结果
         document.getElementById('saveAIResultBtn').addEventListener('click', function() {
             const aiInterpretation = document.getElementById('aiInterpretation');
-            if (aiInterpretation.classList.contains('hidden')) {
+            if (aiInterpretation.style.display === 'none') {
                 alert('请先获取AI解读结果');
                 return;
             }
@@ -489,6 +488,13 @@
                 direction: document.getElementById('aiDirection').textContent,
                 action: document.getElementById('aiAction').textContent
             };
+            
+            // 检查是否所有字段都是空的
+            const isEmpty = Object.values(aiResult).every(value => !value || value === '无');
+            if (isEmpty) {
+                alert('AI解读结果为空，请先获取AI解读结果');
+                return;
+            }
             
             const blob = new Blob([JSON.stringify(aiResult, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
