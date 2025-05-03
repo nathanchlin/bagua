@@ -5,8 +5,9 @@ from openai import OpenAI
 
 # 配置日志
 logging.basicConfig(
-    level=logging.ERROR,  # 只显示错误级别的日志
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    filename='ai_interpreter.log'
 )
 logger = logging.getLogger(__name__)
 
@@ -50,7 +51,31 @@ class AIInterpreter:
                 messages=[
                     {
                         "role": "system",
-                        "content": "你是一位精通易经的专家，擅长解读卦象并给出切实可行的建议。请从以下几个方面进行解读：\n1. 整体形势\n2. 具体建议\n3. 注意事项\n4. 发展方向\n5. 行动建议，输出为txt格式，每一句话结束后用回车换行。"
+                        "content": """你是一位精通易经的专家，擅长解读卦象并给出切实可行的建议。
+请根据以下规则进行解卦：
+
+1. 六爻皆不变：占本卦彖辞，而以内卦为贞，外卦为悔。根据这个卦的卦辞，并结合卦象推论方法对内、外卦之间的关系进行分析。其中内卦代表问卦者，外卦代表问卦者的对方。
+
+2. 一爻变：以本卦变爻辞占。根据本卦中的这一变爻的爻辞推论所问事项的吉凶。
+
+3. 二爻变：以本卦二变爻辞占，仍以上爻为主。根据本卦的两个变爻辞进行推论，并以上位的那个爻辞为主要依据。
+
+4. 三爻变：占本卦及之卦之彖辞，而以本卦为贞，之卦为悔。前十卦主贞，后十卦主悔。应以本卦和之卦的卦辞作为推论依据。其中，本卦卦辞代表问卦者，之卦卦辞代表问卦者对方；初爻不变的十个卦体（即 "前十卦"），以本卦卦辞为主要依据；初爻变化的十个卦体（即 "后十卦"），以之卦卦辞为主要依据。
+
+5. 四爻变：以之卦二不变爻占，仍以下爻为主。推论的依据是之卦中的两个不变爻，其中处于下位的不变爻为主，上位的不变爻为次。
+
+6. 五爻变：以之卦不变爻占。推论的依据是之卦中的不变爻。
+
+7. 六爻变：若为《乾》之《坤》或《坤》之《乾》，则占 "二用"，即《乾・用九》的 "群龙无首，吉" 和《坤・用六》的 "利永贞"；余卦占之卦彖辞。如果遇其他卦体，则以之卦卦辞为推论依据。
+
+请从以下几个方面进行解读：
+1. 整体形势
+2. 具体建议
+3. 注意事项
+4. 发展方向
+5. 行动建议
+
+输出为txt格式，每一句话结束后用回车换行。"""
                     },
                     {
                         "role": "user",
@@ -92,14 +117,20 @@ class AIInterpreter:
         if question:
             prompt += f"问题：{question}\n\n"
             
-        # 安全地获取数据，提供默认值
-        name = str(hexagram_data.get('name', '未知卦名'))
-        description = str(hexagram_data.get('description', '无卦辞'))
-        meaning = str(hexagram_data.get('meaning', '无卦义'))
+        # 获取本卦信息
+        original_hexagram = hexagram_data.get('original_hexagram', {})
+        name = str(original_hexagram.get('name', '未知卦名'))
+        description = str(original_hexagram.get('description', '无卦辞'))
+        meaning = str(original_hexagram.get('meaning', '无卦义'))
         
-        # 获取上下卦信息
-        upper_trigram = hexagram_data.get('upper_trigram')
-        lower_trigram = hexagram_data.get('lower_trigram')
+        # 获取变爻信息
+        num_changes = hexagram_data.get('num_changes', 0)
+        changing_yao_positions = hexagram_data.get('changing_yao_positions', [])
+        interpretation_rules = hexagram_data.get('interpretation_rules', [])
+        interpretation = hexagram_data.get('interpretation', [])
+        
+        # 获取变卦信息
+        changing_hexagram = hexagram_data.get('changing_hexagram', {})
         
         # 构建基本信息
         prompt += f"""卦象信息：
@@ -107,21 +138,28 @@ class AIInterpreter:
 - 卦辞：{description}
 - 卦义：{meaning}
 
+变爻信息：
+- 变爻数量：{num_changes}
+- 变爻位置：{', '.join(map(str, changing_yao_positions))}
+- 解卦规则：{', '.join(interpretation_rules)}
+- 解卦内容：{', '.join(interpretation)}
+
 上下卦：
-- 上卦：{upper_trigram if upper_trigram else '未知上卦'}
-- 下卦：{lower_trigram if lower_trigram else '未知下卦'}
+- 上卦：{original_hexagram.get('upper_trigram', {}).get('name', '未知上卦')}
+- 下卦：{original_hexagram.get('lower_trigram', {}).get('name', '未知下卦')}
 
 爻位信息：
 """
         
         # 添加爻位信息，包含错误处理
-        yao_texts = hexagram_data.get('yao_texts', {})
+        yao_texts = original_hexagram.get('yao_texts', {})
         if isinstance(yao_texts, dict) and yao_texts:
             # 按照从上到下的顺序处理爻位（6->1）
             for position in sorted(yao_texts.keys(), key=lambda x: int(str(x)) if str(x).isdigit() else 0, reverse=True):
                 yao = yao_texts[position]
                 if isinstance(yao, dict):
-                    prompt += f"\n第{position}爻："
+                    is_changing = int(position) in changing_yao_positions
+                    prompt += f"\n第{position}爻{'（变爻）' if is_changing else ''}："
                     
                     # 获取爻的符号
                     if 'symbol' in yao:
@@ -135,10 +173,6 @@ class AIInterpreter:
                     if 'meaning' in yao:
                         prompt += f"\n含义：{yao['meaning']}"
                         
-                    # 获取爻的变化含义
-                    if 'change_meaning' in yao:
-                        prompt += f"\n变爻：{yao['change_meaning']}"
-                        
                     prompt += "\n"
                 else:
                     logger.warning(f"爻位 {position} 的数据格式无效")
@@ -146,6 +180,15 @@ class AIInterpreter:
         else:
             logger.warning("爻位数据格式无效或为空")
             prompt += "（爻位信息缺失或格式无效）\n"
+            
+        # 添加变卦信息
+        if changing_hexagram:
+            prompt += f"""
+变卦信息：
+- 卦名：{changing_hexagram.get('name', '未知卦名')}
+- 卦辞：{changing_hexagram.get('description', '无卦辞')}
+- 卦义：{changing_hexagram.get('meaning', '无卦义')}
+"""
                 
         logger.info("提示信息构建完成")
         return prompt
