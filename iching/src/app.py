@@ -41,7 +41,8 @@ def cast():
     
     try:
         logger.info(f"开始解析问题: {question}")
-        result = iching.interpret_hexagram(question)
+        hexagram, changing_lines = iching.generate_hexagram()
+        result = iching.interpret_hexagram(hexagram, changing_lines, question)
         logger.info(f"解析完成: {result.get('name', '未知卦象')}")
         return jsonify(result)
     except Exception as e:
