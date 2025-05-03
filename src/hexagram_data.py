@@ -90,7 +90,7 @@ HEXAGRAM_MAPS = {
     "震乾": "大壮",  # 第三十四卦
     "离坤": "晋",    # 第三十五卦
     "坤离": "明夷",  # 第三十六卦
-    "离坤": "家人",  # 第三十七卦
+    "巽离": "家人",  # 第三十七卦
     "离兑": "睽",    # 第三十八卦
     "坎艮": "蹇",    # 第三十九卦
     "震坎": "解",    # 第四十卦
@@ -103,7 +103,7 @@ HEXAGRAM_MAPS = {
     "兑坎": "困",    # 第四十七卦
     "坎巽": "井",    # 第四十八卦
     "兑离": "革",    # 第四十九卦
-    "离艮": "鼎",    # 第五十卦
+    "离巽": "鼎",    # 第五十卦
     "震震": "震",    # 第五十一卦
     "艮艮": "艮",    # 第五十二卦
     "巽艮": "渐",    # 第五十三卦
@@ -640,10 +640,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第十二卦
-    "坤乾": {
+    "乾坤": {
         "name": "否",
-        "upper_trigram": "坤",
-        "lower_trigram": "乾",
+        "upper_trigram": "乾",
+        "lower_trigram": "坤",
         "description": "否之匪人，不利君子贞，大往小来",
         "meaning": "闭塞不通，万物不交。内外阻隔，诸事不顺。",
         "yao_texts": {
@@ -1584,10 +1584,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第三十三卦
-    "艮巽": {
+    "乾艮": {
         "name": "遁",
-        "upper_trigram": "艮",
-        "lower_trigram": "巽",
+        "upper_trigram": "乾",
+        "lower_trigram": "艮",
         "description": "亨，小利贞",
         "meaning": "退避。表示退避的状态。通达，小有利于正固。",
         "yao_texts": {
@@ -1630,10 +1630,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第三十四卦
-    "坤巽": {
+    "震乾": {
         "name": "大壮",
-        "upper_trigram": "坤",
-        "lower_trigram": "巽",
+        "upper_trigram": "震",
+        "lower_trigram": "乾",
         "description": "利贞",
         "meaning": "大壮。表示强大、壮盛的状态。利于正固。",
         "yao_texts": {
@@ -1676,10 +1676,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第三十五卦
-    "坤坎": {
+    "离坤": {
         "name": "晋",
-        "upper_trigram": "坤",
-        "lower_trigram": "坎",
+        "upper_trigram": "离",
+        "lower_trigram": "坤",
         "description": "康侯用锡马蕃庶，昼日三接",
         "meaning": "进步。表示进步、发展的状态。康侯用锡马繁衍后代，白天三次接娶。",
         "yao_texts": {
@@ -1723,10 +1723,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第四十卦
-    "雷水": {
+    "震坎": {
         "name": "解",
-        "upper_trigram": "雷",
-        "lower_trigram": "水",
+        "upper_trigram": "震",
+        "lower_trigram": "坎",
         "description": "利西南，无所往，其来复吉。有攸往，夙吉",
         "meaning": "解除。表示解脱、化解的状态。利于往西南方，无所往则来者复返吉祥。有所往则早行吉。",
         "yao_texts": {
@@ -1768,10 +1768,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第四十一卦
-    "山泽": {
+    "艮兑": {
         "name": "损",
-        "upper_trigram": "山",
-        "lower_trigram": "泽",
+        "upper_trigram": "艮",
+        "lower_trigram": "兑",
         "description": "有孚，元吉，无咎，可贞，利有攸往。曷之用？二簋可用享",
         "meaning": "损益相生，损下益上。适度损益，终得其利。",
         "yao_texts": {
@@ -1814,10 +1814,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第四十二卦
-    "风雷": {
+    "巽震": {
         "name": "益",
-        "upper_trigram": "风",
-        "lower_trigram": "雷",
+        "upper_trigram": "巽",
+        "lower_trigram": "震",
         "description": "利有攸往，利涉大川",
         "meaning": "益卦象征增益、进益。有利于前进，有利于渡过大河。表示事业发展顺利，前途光明。",
         "yao_texts": {
@@ -2380,7 +2380,7 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第五十七卦
-    "巽": {
+    "巽巽": {
         "name": "巽",
         "upper_trigram": "巽",
         "lower_trigram": "巽",
@@ -2425,7 +2425,7 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第五十八卦
-    "兑": {
+    "兑兑": {
         "name": "兑",
         "upper_trigram": "兑",
         "lower_trigram": "兑",
@@ -2466,10 +2466,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第五十九卦
-    "涣": {
+    "巽坎": {
         "name": "涣",
-        "upper_trigram": "坎",
-        "lower_trigram": "巽",
+        "upper_trigram": "巽",
+        "lower_trigram": "坎",
         "description": "亨，王假有庙，利涉大川，利贞",
         "meaning": "涣散。表示分散、消散的状态。君王来到宗庙，利于渡过大河，利于正固。",
         "yao_texts": {
@@ -2556,10 +2556,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第六十一卦
-    "兑巽": {
+    "巽兑": {
         "name": "中孚",
-        "upper_trigram": "兑",
-        "lower_trigram": "巽",
+        "upper_trigram": "巽",
+        "lower_trigram": "兑",
         "description": "豚鱼吉，利涉大川，利贞",
         "meaning": "诚信。表示诚信、信实的状态。豚鱼吉祥，利于渡过大河，利于正固。",
         "yao_texts": {
@@ -2732,10 +2732,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第三十六卦
-    "地火": {
+    "坤离": {
         "name": "明夷",
-        "upper_trigram": "地",
-        "lower_trigram": "火",
+        "upper_trigram": "坤",
+        "lower_trigram": "离",
         "description": "利艰贞",
         "meaning": "光明受损，处于困境。坚守正道，终见光明。",
         "yao_texts": {
@@ -2777,10 +2777,10 @@ HEXAGRAMS_DATA = {
         }
     },
     # 第三十七卦
-    "离坤": {
+    "巽离": {
         "name": "家人",
-        "upper_trigram": "离",
-        "lower_trigram": "坤",
+        "upper_trigram": "巽",
+        "lower_trigram": "离",
         "description": "利女贞",
         "meaning": "家庭和睦，内外和顺。持家有道，事业兴旺。",
         "yao_texts": {
@@ -2906,6 +2906,92 @@ HEXAGRAMS_DATA = {
                 "description": "往蹇来硕，吉；利见大人",
                 "meaning": "前进困难，返回收获丰厚，吉祥；有利于见大人。",
                 "change_meaning": "知难而退，终得其福。"
+            }
+        }
+    },
+    # 第五十卦
+    "离巽": {
+        "name": "鼎",
+        "upper_trigram": "离",
+        "lower_trigram": "巽",
+        "description": "元吉，亨",
+        "meaning": "鼎器。表示稳定、安定的状态。大吉大利，通达。",
+        "yao_texts": {
+            "1": {
+                "symbol": "鼎颠趾，利出否，得妾以其子，无咎",
+                "meaning": "鼎器颠倒脚趾，利于倒出污物，得到妾和她的儿子，无灾祸。这表示除旧布新，获得新生。",
+                "change_meaning": "除旧布新，获得新生。"
+            },
+            "2": {
+                "symbol": "鼎有实，我仇有疾，不我能即，吉",
+                "meaning": "鼎中有食物，我的仇人有病，不能接近我，吉祥。这表示有备无患，安然无恙。",
+                "change_meaning": "有备无患，安然无恙。"
+            },
+            "3": {
+                "symbol": "鼎耳革，其行塞，雉膏不食，方雨亏悔，终吉",
+                "meaning": "鼎耳脱落，行动受阻，野鸡膏脂不能食用，正遇下雨，悔恨消除，最终吉祥。这表示虽有困难，终得化解。",
+                "change_meaning": "困难终解，终得吉祥。"
+            },
+            "4": {
+                "symbol": "鼎折足，覆公餗，其形渥，凶",
+                "meaning": "鼎器折断脚，倾覆公侯的食物，其形污浊，凶险。这表示根基不稳，必生灾祸。",
+                "change_meaning": "根基不稳，必生灾祸。"
+            },
+            "5": {
+                "symbol": "鼎黄耳金铉，利贞",
+                "meaning": "鼎有黄色的耳和金属的铉，利于正固。这表示根基稳固，利于发展。",
+                "change_meaning": "根基稳固，利于发展。"
+            },
+            "6": {
+                "symbol": "鼎玉铉，大吉，无不利",
+                "meaning": "鼎有玉制的铉，大吉大利，无所不利。这表示达到理想境界。",
+                "change_meaning": "达到理想，无所不利。"
+            }
+        }
+    },
+    # 第五十一卦
+    "震震": {
+        "name": "震",
+        "upper_trigram": "震",
+        "lower_trigram": "震",
+        "description": "亨。震来虩虩，笑言哑哑。震惊百里，不丧匕鬯",
+        "meaning": "震动。表示震动、惊动的状态。通达。震动来时令人恐惧，而后笑谈自若。震动百里，不失落匕鬯。",
+        "yao_texts": {
+            "1": {
+                "symbol": "初九",
+                "description": "震来虩虩，后笑言哑哑，吉",
+                "meaning": "震动来时令人恐惧，而后笑谈自若，吉祥。这表示经历震动后反而获得安宁。",
+                "change_meaning": "经历震动，终得安宁。"
+            },
+            "2": {
+                "symbol": "六二",
+                "description": "震来厉，亿丧贝，跻于九陵，勿逐，七日得",
+                "meaning": "震动来得猛烈，损失财物，登上九陵，不要追逐，七日后会得到。这表示损失后终会得到补偿。",
+                "change_meaning": "损失之后，终得补偿。"
+            },
+            "3": {
+                "symbol": "六三",
+                "description": "震苏苏，震行无眚",
+                "meaning": "震动使人苏醒，震动行动无灾祸。这表示震动带来新的生机。",
+                "change_meaning": "震动带来，新的生机。"
+            },
+            "4": {
+                "symbol": "九四",
+                "description": "震遂泥",
+                "meaning": "震动陷入泥中。这表示震动受阻，难以施展。",
+                "change_meaning": "震动受阻，难以施展。"
+            },
+            "5": {
+                "symbol": "六五",
+                "description": "震往来厉，亿无丧，有事",
+                "meaning": "震动往来猛烈，没有损失，有事发生。这表示震动带来变化。",
+                "change_meaning": "震动带来，新的变化。"
+            },
+            "6": {
+                "symbol": "上六",
+                "description": "震索索，视矍矍，征凶。震不于其躬，于其邻，无咎。婚媾有言",
+                "meaning": "震动使人战栗，目光惊惧，出征凶险。震动不在自身，而在邻居，无灾祸。婚姻有闲言。这表示震动影响他人。",
+                "change_meaning": "震动影响，他人之事。"
             }
         }
     }

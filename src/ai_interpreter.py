@@ -10,11 +10,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# 加载环境变量
+load_dotenv()
+
 class AIInterpreter:
     def __init__(self):
-        load_dotenv()
-        # 使用环境变量中的API密钥
-        self.api_key = os.getenv("OPENAI_API_KEY", "sk-e1a39e17a78c4ee3aa5151ac9b08b135")
+        self.api_key = os.getenv('DEEPSEEK_API_KEY')
+        if not self.api_key:
+            raise ValueError("DEEPSEEK_API_KEY not found in environment variables")
         self.client = OpenAI(
             api_key=self.api_key,
             base_url="https://api.deepseek.com/v1"
@@ -47,7 +50,7 @@ class AIInterpreter:
                 messages=[
                     {
                         "role": "system",
-                        "content": "你是一位精通易经的专家，擅长解读卦象并给出切实可行的建议。请从以下几个方面进行解读：\n1. 整体形势分析\n2. 具体建议\n3. 需要注意的事项\n4. 发展方向\n5. 行动建议"
+                        "content": "你是一位精通易经的专家，擅长解读卦象并给出切实可行的建议。请从以下几个方面进行解读：\n1. 整体形势\n2. 具体建议\n3. 注意事项\n4. 发展方向\n5. 行动建议，输出为txt格式，每一句话结束后用回车换行。"
                     },
                     {
                         "role": "user",

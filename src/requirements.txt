@@ -1,0 +1,6 @@
+flask==2.0.1
+werkzeug==2.0.1
+python-dotenv>=1.0.0
+markdown2==2.4.0
+requests>=2.31.0
+openai>=1.0.0 

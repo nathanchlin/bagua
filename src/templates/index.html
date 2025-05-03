@@ -117,12 +117,35 @@
             </div>
 
             <!-- 变卦信息 -->
-            <div id="changedHexagram" class="mb-6" style="display: none;">
-                <h3 class="text-lg font-medium text-gray-900">变卦</h3>
-                <div class="mt-2 space-y-2">
-                    <p><span class="font-medium">卦名：</span><span id="changedHexagramName"></span></p>
-                    <p><span class="font-medium">卦辞：</span><span id="changedHexagramDescription"></span></p>
-                    <p><span class="font-medium">卦义：</span><span id="changedHexagramMeaning"></span></p>
+            <div id="changedHexagram" class="mt-8 bg-white rounded-lg shadow-md p-6" style="display: none;">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">变卦信息</h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-900">卦名</h4>
+                        <p id="changedHexagramName" class="mt-1 text-gray-600"></p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-900">描述</h4>
+                        <p id="changedHexagramDescription" class="mt-1 text-gray-600"></p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-900">含义</h4>
+                        <p id="changedHexagramMeaning" class="mt-1 text-gray-600"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="changingInfo" class="mt-8 bg-white rounded-lg shadow-md p-6" style="display: none;">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">变爻信息</h3>
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-medium text-gray-900">变爻数量</h4>
+                        <p id="changingCount" class="mt-1 text-gray-600"></p>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-900">变爻位置</h4>
+                        <ul id="changingLinesList" class="mt-1 text-gray-600"></ul>
+                    </div>
                 </div>
             </div>
 
@@ -155,15 +178,20 @@
         </div>
     </div>
 
-    <!-- 日志显示区域 -->
-    <div class="fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4" style="max-height: 200px; overflow-y: auto;">
+    <!-- 日志显示区域 - 改为侧边栏 -->
+    <div id="logSidebar" class="fixed right-0 top-0 h-full w-80 bg-gray-800 text-white p-4 transform transition-transform duration-300 ease-in-out translate-x-full">
         <div class="flex justify-between items-center mb-2">
             <h3 class="text-lg font-medium">系统日志</h3>
-            <button id="clearLogBtn" class="text-sm bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">
-                清除日志
-            </button>
+            <div class="flex items-center space-x-2">
+                <button id="clearLogBtn" class="text-sm bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded">
+                    清除日志
+                </button>
+                <button id="toggleLogBtn" class="text-sm bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded">
+                    关闭
+                </button>
+            </div>
         </div>
-        <pre id="logArea" class="text-sm font-mono whitespace-pre-wrap"></pre>
+        <pre id="logArea" class="text-sm font-mono whitespace-pre-wrap h-[calc(100vh-100px)] overflow-y-auto"></pre>
     </div>
 
     <script>
@@ -189,6 +217,33 @@
         document.getElementById('clearLogBtn').addEventListener('click', () => {
             document.getElementById('logArea').innerHTML = '';
             log('日志已清除');
+        });
+
+        // 切换日志侧边栏
+        const logSidebar = document.getElementById('logSidebar');
+        const toggleLogBtn = document.getElementById('toggleLogBtn');
+        let isLogVisible = false;
+
+        function toggleLog() {
+            isLogVisible = !isLogVisible;
+            logSidebar.classList.toggle('translate-x-0');
+            logSidebar.classList.toggle('translate-x-full');
+        }
+
+        toggleLogBtn.addEventListener('click', toggleLog);
+
+        // 添加一个显示日志的按钮到主界面
+        const mainContent = document.querySelector('.container');
+        const showLogBtn = document.createElement('button');
+        showLogBtn.id = 'showLogBtn';
+        showLogBtn.className = 'fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-2 rounded-full shadow-lg hover:bg-gray-700 transition-colors';
+        showLogBtn.textContent = '显示日志';
+        mainContent.appendChild(showLogBtn);
+
+        showLogBtn.addEventListener('click', () => {
+            if (!isLogVisible) {
+                toggleLog();
+            }
         });
 
         function displayResult(result) {
@@ -263,6 +318,30 @@
                 changedHexagram.style.display = 'none';
                 log('无变卦信息');
             }
+
+            // 显示变爻信息
+            const changingInfo = document.getElementById('changingInfo');
+            if (result.changing_count > 0) {
+                changingInfo.style.display = 'block';
+                document.getElementById('changingCount').textContent = result.changing_count;
+                const changingLinesList = document.getElementById('changingLinesList');
+                changingLinesList.innerHTML = '';
+                result.changing_lines.forEach(line => {
+                    const li = document.createElement('li');
+                    const yaoText = result.yao_texts[line] || {};
+                    li.innerHTML = `
+                        <div class="mb-2">
+                            <span class="font-medium">第${line}爻</span>
+                            ${yaoText.change_meaning ? `<div class="ml-4 text-gray-600">${yaoText.change_meaning}</div>` : ''}
+                        </div>
+                    `;
+                    changingLinesList.appendChild(li);
+                });
+                log(`显示变爻信息：${result.changing_count}个变爻`);
+            } else {
+                changingInfo.style.display = 'none';
+                log('无变爻');
+            }
         }
 
         document.getElementById('questionForm').addEventListener('submit', async (e) => {
@@ -318,12 +397,31 @@
 
             try {
                 log('开始下载解析结果...');
+                
+                // 获取AI解读内容
+                const aiInterpretation = document.getElementById('aiInterpretation');
+                let aiData = null;
+                if (aiInterpretation.style.display !== 'none') {
+                    aiData = {
+                        sections: {
+                            '整体形势': document.getElementById('aiSituation').textContent,
+                            '具体建议': document.getElementById('aiAdvice').textContent,
+                            '注意事项': document.getElementById('aiWarnings').textContent,
+                            '发展方向': document.getElementById('aiDirection').textContent,
+                            '行动建议': document.getElementById('aiAction').textContent
+                        }
+                    };
+                }
+
                 const response = await fetch('/download_result', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(currentResult)
+                    body: JSON.stringify({
+                        ...currentResult,
+                        ai_interpretation: aiData
+                    })
                 });
 
                 if (!response.ok) {
@@ -335,7 +433,7 @@
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = `易经解析_${new Date().toISOString().slice(0,19).replace(/[-:]/g, '')}.md`;
+                a.download = `易经解析_${new Date().toISOString().slice(0,19).replace(/[-:]/g, '')}.txt`;
                 document.body.appendChild(a);
                 a.click();
                 window.URL.revokeObjectURL(url);
@@ -365,7 +463,14 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        ...currentResult,
+                        hexagram: {
+                            name: currentResult.name,
+                            description: currentResult.description,
+                            meaning: currentResult.meaning
+                        },
+                        changing_count: currentResult.changing_count,
+                        changing_lines: currentResult.changing_lines,
+                        changed_hexagram: currentResult.changed_hexagram,
                         question: document.getElementById('question').value.trim()
                     })
                 });
