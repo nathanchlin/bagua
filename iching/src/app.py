@@ -181,4 +181,4 @@ if __name__ == '__main__':
     debug = os.environ.get('FLASK_ENV') == 'development'
     
     logger.info(f"启动服务器，主机: {host}, 端口: {port}")
-    app.run(host=host, port=port, debug=debug) 
+    app.run(host=host, port=port, debug=debug, threaded=True, ssl_context=None) 
