@@ -122,3 +122,41 @@ iching/
 - [ ] 添加单元测试
 - [ ] 优化Web界面
 - [ ] 增加更多AI解读功能 
+
+## Docker 部署
+
+本项目支持使用 Docker 进行部署，提供了两种启动方式：
+
+### 使用 docker-compose（推荐）
+
+1. 确保已安装 Docker 和 docker-compose
+2. 在项目根目录执行：
+   ```bash
+   # 使脚本可执行
+   chmod +x run_docker.sh
+   
+   # 启动应用
+   ./run_docker.sh
+   ```
+3. 访问 http://localhost:5000
+
+### 手动构建和运行
+
+1. 构建镜像：
+   ```bash
+   docker build -t iching-web .
+   ```
+
+2. 运行容器：
+   ```bash
+   docker run -d -p 5000:5000 --name iching-web iching-web
+   ```
+
+3. 访问 http://localhost:5000
+
+### 常用命令
+
+- 查看日志：`docker-compose logs -f`
+- 停止应用：`docker-compose down`
+- 重启应用：`docker-compose restart`
+- 重新构建：`docker-compose up --build -d` 

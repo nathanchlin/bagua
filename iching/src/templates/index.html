@@ -355,7 +355,8 @@
                 });
 
                 if (!response.ok) {
-                    throw new Error('求卦失败');
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || '求卦失败');
                 }
 
                 const result = await response.json();
