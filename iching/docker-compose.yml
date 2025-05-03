@@ -2,7 +2,9 @@ version: '3'
 
 services:
   web:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     ports:
       - "5005:5005"
     volumes:
@@ -10,4 +12,10 @@ services:
     environment:
       - FLASK_ENV=development
       - PORT=5005
-    restart: unless-stopped 
+    restart: unless-stopped
+    networks:
+      - iching-net
+
+networks:
+  iching-net:
+    driver: bridge 
