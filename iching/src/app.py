@@ -16,7 +16,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-# 完全禁用所有日志输出
+# 禁用Flask的访问日志
 logging.getLogger('werkzeug').disabled = True
 logging.getLogger('flask.app').disabled = True
 app.logger.disabled = True
@@ -25,7 +25,11 @@ app.logger.disabled = True
 # sys.stderr = open('/dev/null', 'w')
 
 iching = IChing()
-ai_interpreter = AIInterpreter()
+try:
+    ai_interpreter = AIInterpreter()
+except Exception as e:
+    logger.warning(f"AI解释器初始化失败: {str(e)}")
+    ai_interpreter = None
 
 @app.route('/')
 def index():
@@ -34,19 +38,25 @@ def index():
 
 @app.route('/cast', methods=['POST'])
 def cast():
-    question = request.form.get('question', '').strip()
-    if not question:
-        logger.warning("收到空问题")
-        return jsonify({'error': '问题不能为空'}), 400
-    
     try:
+        question = request.form.get('question', '').strip()
+        logger.info(f"收到求卦请求，问题: {question}")
+        
+        if not question:
+            logger.warning("收到空问题")
+            return jsonify({'error': '问题不能为空'}), 400
+        
         logger.info(f"开始解析问题: {question}")
-        result = iching.interpret_hexagram(question)
+        hexagram = iching.generate_hexagram()
+        changing_lines = [i+1 for i, v in enumerate(hexagram) if v in [6, 9]]
+        logger.info(f"生成卦象: {hexagram}, 变爻: {changing_lines}")
+        
+        result = iching.interpret_hexagram(hexagram, changing_lines, question)
         logger.info(f"解析完成: {result.get('name', '未知卦象')}")
         return jsonify(result)
     except Exception as e:
-        logger.error(f"解析失败: {str(e)}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"求卦失败: {str(e)}", exc_info=True)
+        return jsonify({'error': f'求卦失败: {str(e)}'}), 500
 
 @app.route('/hexagrams')
 def hexagrams():
@@ -150,6 +160,10 @@ def download_result():
 def ai_interpret():
     """AI解卦接口"""
     try:
+        if ai_interpreter is None:
+            logger.warning("AI解释器未初始化")
+            return jsonify({'error': 'AI解释器未初始化，请检查API密钥配置'}), 503
+            
         data = request.json
         if not data:
             logger.warning("AI解读请求中没有数据")
@@ -174,7 +188,10 @@ def ai_interpret():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # 从环境变量获取端口号，默认为5005
+    # 在Docker环境中使用0.0.0.0作为主机地址
+    host = '0.0.0.0'
     port = int(os.environ.get('PORT', 5005))
-    logger.info(f"启动服务器，端口: {port}")
-    app.run(host='0.0.0.0', port=port, debug=True) 
+    debug = os.environ.get('FLASK_ENV') == 'development'
+    
+    logger.info(f"启动服务器，主机: {host}, 端口: {port}")
+    app.run(host=host, port=port, debug=debug, threaded=True, ssl_context=None) 
