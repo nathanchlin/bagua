@@ -16,16 +16,17 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
-# 完全禁用所有日志输出
+# 禁用Flask的访问日志
 logging.getLogger('werkzeug').disabled = True
 logging.getLogger('flask.app').disabled = True
 app.logger.disabled = True
-# 禁用Flask的访问日志
-sys.stdout = open('/dev/null', 'w')
-sys.stderr = open('/dev/null', 'w')
 
 iching = IChing()
-ai_interpreter = AIInterpreter()
+try:
+    ai_interpreter = AIInterpreter()
+except Exception as e:
+    logger.warning(f"AI解释器初始化失败: {str(e)}")
+    ai_interpreter = None
 
 @app.route('/')
 def index():
@@ -156,6 +157,10 @@ def download_result():
 def ai_interpret():
     """AI解卦接口"""
     try:
+        if ai_interpreter is None:
+            logger.warning("AI解释器未初始化")
+            return jsonify({'error': 'AI解释器未初始化，请检查API密钥配置'}), 503
+            
         data = request.json
         if not data:
             logger.warning("AI解读请求中没有数据")
