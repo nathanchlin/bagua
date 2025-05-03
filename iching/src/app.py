@@ -177,7 +177,7 @@ def ai_interpret():
 if __name__ == '__main__':
     # 在Docker环境中使用0.0.0.0作为主机地址
     host = '0.0.0.0'
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 5005))
     debug = os.environ.get('FLASK_ENV') == 'development'
     
     logger.info(f"启动服务器，主机: {host}, 端口: {port}")
