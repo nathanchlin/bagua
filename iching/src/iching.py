@@ -204,7 +204,19 @@ class IChing:
             
             if not hexagram_info:
                 logger.error("无法获取卦象信息")
-                return None
+                return {
+                    'error': '无法获取卦象信息',
+                    'name': '未知卦',
+                    'description': '无卦辞',
+                    'meaning': '无解释',
+                    'upper_trigram': {'name': '未知', 'nature': '未知', 'characteristic': '未知', 'element': '未知'},
+                    'lower_trigram': {'name': '未知', 'nature': '未知', 'characteristic': '未知', 'element': '未知'},
+                    'yao_texts': {},
+                    'num_changes': len(changing_lines),
+                    'changing_yaos': changing_lines,
+                    'changed_hexagram': None,
+                    'question': question
+                }
             
             # 获取变卦信息
             changed_hexagram = self.get_changed_hexagram(hexagram)
@@ -235,7 +247,19 @@ class IChing:
             
         except Exception as e:
             logger.error(f"解析卦象失败: {str(e)}", exc_info=True)
-            return None
+            return {
+                'error': f'解析卦象失败: {str(e)}',
+                'name': '未知卦',
+                'description': '无卦辞',
+                'meaning': '无解释',
+                'upper_trigram': {'name': '未知', 'nature': '未知', 'characteristic': '未知', 'element': '未知'},
+                'lower_trigram': {'name': '未知', 'nature': '未知', 'characteristic': '未知', 'element': '未知'},
+                'yao_texts': {},
+                'num_changes': len(changing_lines),
+                'changing_yaos': changing_lines,
+                'changed_hexagram': None,
+                'question': question
+            }
 
     def print_available_hexagrams(self):
         """打印可用的六十四卦"""
