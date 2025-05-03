@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./src:/app
+    environment:
+      - FLASK_ENV=development
+      - PORT=5005
+    restart: unless-stopped 
