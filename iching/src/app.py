@@ -174,7 +174,10 @@ def ai_interpret():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # 从环境变量获取端口号，默认为5005
-    port = int(os.environ.get('PORT', 5005))
-    logger.info(f"启动服务器，端口: {port}")
-    app.run(host='0.0.0.0', port=port, debug=True) 
+    # 在Docker环境中使用0.0.0.0作为主机地址
+    host = '0.0.0.0'
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') == 'development'
+    
+    logger.info(f"启动服务器，主机: {host}, 端口: {port}")
+    app.run(host=host, port=port, debug=debug) 
