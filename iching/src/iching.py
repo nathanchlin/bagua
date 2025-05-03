@@ -272,6 +272,53 @@ class IChing:
                 print()
         print("\n")
 
+    def get_changing_yao_rules(self, changing_lines):
+        """获取变爻解释规则
+        Args:
+            changing_lines: 变爻位置列表
+        """
+        num_changes = len(changing_lines)
+        if num_changes == 0:
+            return "六爻皆不变：占本卦彖辞，而以内卦为贞，外卦为悔。根据这个卦的卦辞，并结合卦象推论方法对内、外卦之间的关系进行分析。其中内卦代表问卦者，外卦代表问卦者的对方。"
+        elif num_changes == 1:
+            return "一爻变：以本卦变爻辞占。根据本卦中的这一变爻的爻辞推论所问事项的吉凶。"
+        elif num_changes == 2:
+            return "二爻变：以本卦二变爻辞占，仍以上爻为主。以上位爻辞为主，下位爻辞为辅，结合两者推论所问事项的吉凶。"
+        elif num_changes == 3:
+            return "三爻变：占本卦及之卦之彖辞，而以本卦为贞，之卦为悔。前十卦主贞，后十卦主悔。应以本卦和之卦的卦辞作为推论依据。其中，本卦卦辞代表问卦者，之卦卦辞代表问卦者对方；初爻不变的十个卦体（即 '前十卦'），以本卦卦辞为主要依据；初爻变化的十个卦体（即 '后十卦'），以之卦卦辞为主要依据。"
+        elif num_changes == 4:
+            return "四爻变：以之卦二不变爻占，仍以下爻为主。推论的依据是之卦中的两个不变爻，其中处于下位的不变爻为主，上位的不变爻为次。"
+        elif num_changes == 5:
+            return "五爻变：以之卦不变爻占。推论的依据是之卦中的不变爻。"
+        else:  # num_changes == 6
+            return "六爻变：若为《乾》之《坤》或《坤》之《乾》，则占 '二用'，即《乾・用九》的 '群龙无首，吉' 和《坤・用六》的 '利永贞'；余卦占之卦彖辞。"
+
+    def get_changing_yao_interpretation(self, changing_lines):
+        """获取变爻解释
+        Args:
+            changing_lines: 变爻位置列表
+        """
+        num_changes = len(changing_lines)
+        if num_changes == 0:
+            return "本卦彖辞：根据本卦的卦辞进行解释。"
+        elif num_changes == 1:
+            yao_pos = changing_lines[0]
+            return f"变爻位置：第{yao_pos}爻，根据本卦中这一变爻的爻辞进行解释。"
+        elif num_changes == 2:
+            yao_pos1, yao_pos2 = sorted(changing_lines)
+            return f"变爻位置：第{yao_pos1}爻和第{yao_pos2}爻，以上位爻辞为主，下位爻辞为辅。"
+        elif num_changes == 3:
+            return "三爻变：根据本卦和变卦的卦辞进行解释，以本卦为贞，变卦为悔。"
+        elif num_changes == 4:
+            unchanged_yaos = [i for i in range(6) if i not in changing_lines]
+            yao_pos1, yao_pos2 = sorted(unchanged_yaos)
+            return f"不变爻位置：第{yao_pos1}爻和第{yao_pos2}爻，以下位爻为主，上位爻为辅。"
+        elif num_changes == 5:
+            unchanged_yao = [i for i in range(6) if i not in changing_lines][0]
+            return f"不变爻位置：第{unchanged_yao}爻，根据这一不变爻的爻辞进行解释。"
+        else:  # num_changes == 6
+            return "六爻变：根据变卦的卦辞进行解释，若为乾变坤或坤变乾，则占'二用'。"
+
 def print_divider():
     print("=" * 50)
 
