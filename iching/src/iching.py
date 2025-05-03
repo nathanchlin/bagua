@@ -337,6 +337,7 @@ class IChing:
                 'num_changes': num_changes,  # 变爻数量
                 'interpretation': interpretation,  # 变爻解释
                 'interpretation_rules': interpretation_rules,  # 变爻解释规则
+                'question': question,  # 添加问题字段
                 'changed_hexagram': {
                     'name': changed_info['name'],
                     'description': changed_info['description'],
