@@ -34,20 +34,24 @@ def index():
 
 @app.route('/cast', methods=['POST'])
 def cast():
-    question = request.form.get('question', '').strip()
-    if not question:
-        logger.warning("收到空问题")
-        return jsonify({'error': '问题不能为空'}), 400
-    
     try:
+        question = request.form.get('question', '').strip()
+        logger.info(f"收到求卦请求，问题: {question}")
+        
+        if not question:
+            logger.warning("收到空问题")
+            return jsonify({'error': '问题不能为空'}), 400
+        
         logger.info(f"开始解析问题: {question}")
         hexagram, changing_lines = iching.generate_hexagram()
+        logger.info(f"生成卦象: {hexagram}, 变爻: {changing_lines}")
+        
         result = iching.interpret_hexagram(hexagram, changing_lines, question)
         logger.info(f"解析完成: {result.get('name', '未知卦象')}")
         return jsonify(result)
     except Exception as e:
-        logger.error(f"解析失败: {str(e)}", exc_info=True)
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"求卦失败: {str(e)}", exc_info=True)
+        return jsonify({'error': f'求卦失败: {str(e)}'}), 500
 
 @app.route('/hexagrams')
 def hexagrams():
