@@ -1,66 +1,126 @@
-# 周易算卦系统
+# 易经占卜应用
 
-这是一个基于周易六十四卦的算卦系统，可以根据用户输入的问题生成卦象并进行解释。
+这是一个基于 Flask 的易经占卜应用，支持传统解卦和 AI 智能解读。
 
 ## 功能特点
 
-- 模拟传统的求卦过程
-- 生成完整的六爻卦象
-- 解析上下卦的属性
-- 提供详细的卦象解释
-- 包含五行属性分析
+- 传统易经六十四卦占卜
+- AI 智能解读（使用 DeepSeek API）
+- 支持变爻分析
+- 支持卦象可视化
+- 支持导出占卜记录
 
-## 安装要求
+## 安装方式
 
-- Python 3.6+
-- 无需额外依赖包
+### 方式一：直接运行
 
-## 使用方法
-
-1. 进入项目目录：
-   ```bash
-   cd iching/src
-   ```
-
-2. 运行主程序：
-   ```bash
-   python iching.py
-   ```
-
-3. 根据提示输入你想问的问题，程序会自动生成卦象并给出详细解释。
-
-## 输出说明
-
-程序会输出以下信息：
-- 问题内容
-- 卦名
-- 卦辞
-- 卦义
-- 上卦信息（包含性质、特性、五行）
-- 下卦信息（包含性质、特性、五行）
-- 六爻位置
-
-## 项目结构
-
+1. 克隆仓库：
+```bash
+git clone https://github.com/yourusername/iching.git
+cd iching
 ```
-iching/
-├── src/
-│   ├── iching.py          # 主程序
-│   └── hexagram_data.py   # 卦象数据
-├── tests/                 # 测试文件（待添加）
-└── README.md             # 项目说明文档
+
+2. 安装依赖：
+```bash
+pip install -r requirements.txt
 ```
+
+3. 设置环境变量：
+```bash
+export DEEPSEEK_API_KEY=your_api_key_here
+```
+
+4. 运行应用：
+```bash
+python app.py
+```
+
+### 方式二：使用 Docker（推荐）
+
+1. 克隆仓库：
+```bash
+git clone https://github.com/yourusername/iching.git
+cd iching
+```
+
+2. 创建环境变量文件：
+```bash
+echo "DEEPSEEK_API_KEY=your_api_key_here" > .env
+```
+
+3. 构建并启动容器：
+```bash
+# 构建镜像
+docker-compose build
+
+# 启动容器
+docker-compose up -d
+```
+
+4. 查看容器状态：
+```bash
+docker-compose ps
+```
+
+5. 查看容器日志：
+```bash
+docker-compose logs -f
+```
+
+6. 停止容器：
+```bash
+docker-compose down
+```
+
+## 访问应用
+
+应用启动后，打开浏览器访问：
+- 直接运行：http://localhost:5000
+- Docker 运行：http://localhost:5000
+
+## 环境变量
+
+- `DEEPSEEK_API_KEY`：DeepSeek API 密钥（必需）
 
 ## 注意事项
 
-- 本程序仅供娱乐和参考
-- 卦象解释基于传统周易理论
-- 建议在使用时保持平和心态
+- 确保在启动应用前已设置 `DEEPSEEK_API_KEY` 环境变量
+- 默认情况下，应用运行在 5000 端口
+- 如需更改端口，请修改 `docker-compose.yml` 文件中的端口映射
+- 应用数据存储在容器内，如需持久化存储，请根据需要配置 volumes
 
-## 后续开发计划
+## 更新应用
 
-- [ ] 添加更详细的卦象解释
-- [ ] 实现更准确的筊杯算法
-- [ ] 添加变卦分析
-- [ ] 添加单元测试
-- [ ] 提供Web界面 
+### 直接运行方式
+```bash
+git pull
+pip install -r requirements.txt
+```
+
+### Docker 方式
+```bash
+git pull
+docker-compose up -d --build
+```
+
+## 常见问题
+
+1. 如何修改端口？
+   - 直接运行：修改 `app.py` 中的 `port` 参数
+   - Docker 运行：修改 `docker-compose.yml` 中的端口映射
+
+2. 如何查看日志？
+   - 直接运行：查看控制台输出
+   - Docker 运行：使用 `docker-compose logs -f` 命令
+
+3. 如何备份数据？
+   - 直接运行：备份 `data` 目录
+   - Docker 运行：配置 volumes 持久化存储
+
+## 贡献指南
+
+欢迎提交 Issue 和 Pull Request 来帮助改进这个项目。
+
+## 许可证
+
+MIT License 
