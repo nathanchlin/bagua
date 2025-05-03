@@ -120,6 +120,20 @@
                 </div>
             </div>
 
+            <!-- 变爻信息 -->
+            <div class="mb-6">
+                <h3 class="text-lg font-medium text-gray-900">变爻信息</h3>
+                <div class="mt-2 space-y-2">
+                    <p><span class="font-medium">变爻数量：</span><span id="numChanges"></span></p>
+                    <p><span class="font-medium">变爻位置：</span><span id="changingYaoPositions"></span></p>
+                    <div id="changingYaoInterpretation" class="mt-4">
+                        <p class="font-medium mb-2">变爻解释：</p>
+                        <p id="interpretationRules" class="text-gray-600 mb-2"></p>
+                        <p id="interpretation" class="text-gray-700"></p>
+                    </div>
+                </div>
+            </div>
+
             <!-- 上下卦信息 -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
@@ -238,6 +252,13 @@
             document.getElementById('hexagramDescription').textContent = result.description || '无';
             document.getElementById('hexagramMeaning').textContent = result.meaning || '无';
             log(`显示卦象: ${result.name || '无'}`);
+
+            // 显示变爻信息
+            document.getElementById('numChanges').textContent = result.num_changes || '0';
+            document.getElementById('changingYaoPositions').textContent = result.changing_yaos ? result.changing_yaos.join('、') : '无';
+            document.getElementById('interpretationRules').textContent = result.interpretation_rules || '无';
+            document.getElementById('interpretation').textContent = result.interpretation || '无';
+            log(`显示变爻信息: ${result.num_changes || '0'}个变爻`);
             
             // 显示上下卦信息
             const upperTrigram = result.upper_trigram || {};
